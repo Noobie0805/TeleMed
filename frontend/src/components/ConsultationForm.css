@@ -1,0 +1,93 @@
+.consultation-form {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid #fff;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  max-width: 800px;
+  margin: 3.5rem auto 2rem auto;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.consultation-form h2 {
+  color: #00bcd4;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.consultation-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  gap: 0.5rem;
+}
+
+.consultation-form input,
+.consultation-form select,
+.consultation-form textarea {
+  margin-top: 0.3rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid #b2aaff;
+  border-radius: 7px;
+  font-size: 1.1rem;
+  background: rgba(0,0,0,0.15);
+  color: #fff;
+  margin-bottom: 0.2rem;
+  transition: border 0.18s, background 0.18s;
+}
+.consultation-form input:focus,
+.consultation-form select:focus,
+.consultation-form textarea:focus {
+  border: 1.5px solid #00bcd4;
+  outline: none;
+  background: rgba(0,188,212,0.07);
+}
+
+.consultation-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.consultation-form button {
+  padding: 0.85rem;
+  background: #00bcd4;
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,188,212,0.10);
+}
+.consultation-form button:hover {
+  background: #0097a7;
+  color: #fff;
+}
+
+.consultation-form select option {
+  background: #222;
+  color: #fff;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+}
+
+input[type="date"]::-webkit-input-placeholder {
+  color: #b2aaff;
+}
+
+input[type="date"] {
+  color-scheme: light;
+} 
