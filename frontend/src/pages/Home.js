@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import HeroSection from '../components/HeroSection';
-import FeaturesOverview from '../components/FeaturesOverview';
-import HowItWorks from '../components/HowItWorks';
-import SymptomInput from '../components/SymptomInput';
-import AIResponseDisplay from '../components/AIResponseDisplay';
-import Disclaimer from '../components/Disclaimer';
-import Testimonials from '../components/Testimonials';
-import LiveChatWidget from '../components/LiveChatWidget';
-import FAQSection from '../components/FAQSection';
+import HeroSection from '../components/DashboardElements/HeroSection';
+import FeaturesOverview from '../components/DashboardElements/FeaturesOverview';
+import HowItWorks from '../components/DashboardElements/HowItWorks';
+// import SymptomInput from '../components/AssistantElements/SymptomInput';
+// import AIResponseDisplay from '../components/AssistantElements/AIResponseDisplay';
+// import Disclaimer from '../components/AssistantElements/Disclaimer';
+// import Testimonials from '../components/AssistantElements/Testimonials';
+import LiveChatWidget from '../components/DashboardElements/LiveChatWidget';
+import FAQSection from '../components/DashboardElements/FAQSection';
+import UserStats from '../components/DashboardElements/userCharts/UserStats';
 
 function Home() {
   const [aiResponse, setAiResponse] = useState('');
@@ -19,13 +20,14 @@ function Home() {
 
   return (
     <>
-      <div style={{ marginBottom: '5rem' }}><HeroSection /></div>
-      <div style={{ marginBottom: '5rem' }}><FeaturesOverview /></div>
-      <div style={{ marginBottom: '5rem' }}><HowItWorks /></div>
-      <div style={{ marginBottom: '5rem' }}><SymptomInput onSubmit={handleSymptomSubmit} /></div>
-      <div style={{ marginBottom: '5rem' }}><AIResponseDisplay response={aiResponse} /></div>
-      <div style={{ marginBottom: '5rem' }}><Disclaimer /></div>
-      <div style={{ marginBottom: '5rem' }}><Testimonials /></div>
+      <div style={{ marginBottom: '6rem' }}><HeroSection /></div>
+      <div style={{ marginBottom: '6rem' }}><FeaturesOverview /></div>    
+      <div style={{ marginBottom: '6rem' }}><UserStats /></div>
+      <div style={{ marginBottom: '6rem' }}><HowItWorks /></div>
+      {/* <div style={{ marginBottom: '5rem' }}><SymptomInput onSubmit={handleSymptomSubmit} /></div> */}
+      {/* <div style={{ marginBottom: '5rem' }}><AIResponseDisplay response={aiResponse} /></div> */}
+      {/* <div style={{ marginBottom: '5rem' }}><Disclaimer /></div> */}
+      {/* <div style={{ marginBottom: '5rem' }}><Testimonials /></div> */}
       <FAQSection />
       <LiveChatWidget />
     </>

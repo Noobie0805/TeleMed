@@ -1,9 +1,9 @@
 import React from 'react';
-import MissionStatement from '../components/MissionStatement';
-import TeamSection from '../components/TeamSection';
-import TechOverview from '../components/TechOverview';
-import ContactInfo from '../components/ContactInfo';
-import Testimonials from '../components/Testimonials';
+import MissionStatement from '../components/ContactUsElements/MissionStatement';
+import TeamSection from '../components/ContactUsElements/TeamSection';
+import TechOverview from '../components/ContactUsElements/TechOverview';
+import ContactInfo from '../components/ContactUsElements/ContactInfo';
+import Testimonials from '../components/AssistantElements/Testimonials';
 import { useNavigate } from 'react-router-dom';
 
 function About() {

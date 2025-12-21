@@ -54,13 +54,13 @@ export default function FAQSection() {
           </ul>
         </div>
       </div>
-      <div className="faq-cta-card">
+      {/* <div className="faq-cta-card">
         <div className="faq-cta-content">
           <span className="faq-cta-label">Change Your Life</span>
           <h3>Find Your Inner Peace & Happiness</h3>
         </div>
         <button className="faq-cta-btn" onClick={handleConsultClick}>Book Consultation</button>
-      </div>
+      </div> */}
     </div>
   );
 } 

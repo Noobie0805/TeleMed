@@ -1,7 +1,7 @@
 import React from 'react';
 import './Testimonials.css';
-import user1 from '../user-1-female.png';
-import user2 from '../user-2-female.png';
+import user1 from '../../assets/user-1-female.png';
+import user2 from '../../assets/user-2-female.png';
 
 const testimonials = [
   {

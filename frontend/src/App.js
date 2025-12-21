@@ -7,6 +7,7 @@ import Consult from './pages/Consult';
 import About from './pages/About';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Assistant from './pages/Assistant';
 import './App.css';
 
 function App() {
@@ -19,12 +20,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/consult" element={<Consult />} />
             <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            {/* <Route path="/login" element={<Login />} /> */}
+            {/* <Route path="/signup" element={<Signup />} /> */}
+            <Route path="/assistant" element={<Assistant />} />
           </Routes>
         </div>
         <Footer />
-    </div>
+      </div>
     </Router>
   );
 }

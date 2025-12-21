@@ -1,0 +1,15 @@
+.medsChartStyle {
+    width: 500px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.577);
+    border-radius: 20px;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border: 1px solid white;
+}
+
+.medsChartStyle:hover {
+    transform: scale(1.018);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.884);
+}

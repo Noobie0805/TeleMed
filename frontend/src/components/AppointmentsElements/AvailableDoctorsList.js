@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AvailableDoctorsList.css';
-import doctor1 from '../doctor1(female).png';
-import doctor2 from '../doctor2(female).png';
-import doctor3 from '../doctor3(female).png';
-import doctor4 from '../doctor4(male).png';
+import doctor1 from '../../assets/doctor1(female).png';
+import doctor2 from '../../assets/doctor2(female).png';
+import doctor3 from '../../assets/doctor3(female).png';
+import doctor4 from '../../assets/doctor4(male).png';
 
 const doctors = [
   { name: 'Dr. Asha Mehta', specialty: 'General Physician', img: doctor1 },

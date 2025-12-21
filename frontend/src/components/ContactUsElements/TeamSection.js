@@ -1,8 +1,8 @@
 import React from 'react';
 import './TeamSection.css';
-import medicalofficer from '../medicalofficer.png';
-import leadengineer from '../leadengineer.png';
-import aispecialist from '../aispecialist.png';
+import medicalofficer from '../../assets/medicalofficer.png';
+import leadengineer from '../../assets/leadengineer.png';
+import aispecialist from '../../assets/aispecialist.png';
 
 const team = [
   { name: 'Dr. Asha Mehta', role: 'Chief Medical Officer', img: medicalofficer, bio: '10+ years in medicine, passionate about digital health and patient care.' },

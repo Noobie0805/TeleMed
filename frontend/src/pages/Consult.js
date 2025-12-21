@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import ConsultationForm from '../components/ConsultationForm';
-import AvailableDoctorsList from '../components/AvailableDoctorsList';
-import UpcomingAppointments from '../components/UpcomingAppointments';
-import VideoCallModule from '../components/VideoCallModule';
-import consultimage from '../consultimage.png';
+import ConsultationForm from '../components/AppointmentsElements/ConsultationForm';
+import AvailableDoctorsList from '../components/AppointmentsElements/AvailableDoctorsList';
+import UpcomingAppointments from '../components/AppointmentsElements/UpcomingAppointments';
+import VideoCallModule from '../components/AppointmentsElements/VideoCallModule';
+import consultimage from '../assets/consultimage.png';
 
 function Consult() {
   const location = useLocation();
