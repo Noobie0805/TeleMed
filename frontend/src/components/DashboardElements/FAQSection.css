@@ -1,22 +1,23 @@
 .faq-section-bg {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
+  padding: .5rem .5rem;
+  width: 100%;
 }
 
 .faq-card {
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   border: 1.5px solid #fff;
   border-radius: 1.5rem;
   box-shadow: 0 2px 16px rgba(25, 118, 210, 0.10);
   display: flex;
   align-items: center;
-  padding: 2.5rem 2rem;
+  padding: 3.5rem 3rem;
   max-width: 800px;
   width: 100%;
   margin-bottom: 2.5rem;
@@ -77,14 +78,14 @@
 }
 
 .faq-answer {
-  background: rgba(108,99,255,0.10);
+  background: rgba(108, 99, 255, 0.10);
   border-left: 3px solid #6c63ff;
   border-radius: 0.7rem;
   margin: 0.5rem 0 1rem 0;
   padding: 1rem 1.2rem;
   color: #fff;
   font-size: 1rem;
-  box-shadow: 0 1px 4px rgba(33,150,243,0.07);
+  box-shadow: 0 1px 4px rgba(33, 150, 243, 0.07);
 }
 
 .faq-list li:not(:last-child) {
@@ -98,7 +99,7 @@
 .faq-cta-card {
   background: #00bcd4;
   border-radius: 1rem;
-  box-shadow: 0 2px 12px rgba(0,188,212,0.10);
+  box-shadow: 0 2px 12px rgba(0, 188, 212, 0.10);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -137,10 +138,10 @@
   padding: 0.85rem 2rem;
   cursor: pointer;
   transition: background 0.18s, color 0.18s;
-  box-shadow: 0 2px 8px rgba(0,188,212,0.10);
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.10);
 }
 
 .faq-cta-btn:hover {
   background: #b2aaff;
   color: #fff;
-} 
+}
