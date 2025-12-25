@@ -1,14 +1,26 @@
+import dotenv from 'dotenv';
 import { app } from './app.js';
 import connectDB from './src/db/index.js';
-import dotenv from 'dotenv';
-dotenv.config({ path: "./.env" });
 
-connectDB().then(() => {
-  app.listen(process.env.PORT || 8000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 8000}`);
+dotenv.config();
+
+const PORT = process.env.PORT || 5000;
+
+// Connect to database then start server
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(` Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
   });
-}).catch((err) => {
-  console.log("MONGODB CONNECTION FAILED: ", err);
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Promise Rejection:', err);
   process.exit(1);
 });
 

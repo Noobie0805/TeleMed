@@ -1,7 +1,7 @@
-import { AsyncHandler } from '../../utils/asyncHandler.js';
-import { User } from '../../models/users.model.js';
-import { ApiError } from '../../utils/apiError.js';
-import { ApiResponse } from '../../utils/apiResponse.js';
+import { AsyncHandler } from '../../utils/AsyncHandler.js';
+import User from '../../models/users.model.js';
+import { ApiError } from '../../utils/ApiError.js';
+import { ApiResponse } from '../../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
 
 const generateAccessRefreshToken = async (userId) => {
@@ -10,8 +10,9 @@ const generateAccessRefreshToken = async (userId) => {
         if (!user) {
             throw new ApiError(404, 'User not found');
         }
-        const { accessToken, refreshToken } = await user.generateTokens(); // Instance method
+        const { accessToken, refreshToken, refreshTokenExpiry } = user.generateTokens();
         user.refreshToken = refreshToken;
+        user.refreshTokenExpiry = refreshTokenExpiry;
         await user.save({ validateBeforeSave: false });
         return { accessToken, refreshToken };
     } catch (error) {
@@ -45,6 +46,7 @@ const registerUser = AsyncHandler(async (req, res) => {
         sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     };
+
 
     const responseData = new ApiResponse(201, {
         user: createdUser,
@@ -98,11 +100,22 @@ const refreshAccessToken = AsyncHandler(async (req, res) => {
         throw new ApiError(400, 'Refresh token required');
     }
 
-    const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+    let decodedToken;
+    try {
+        decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
+        throw new ApiError(401, 'Refresh token malformed or expired');
+    }
 
-    const user = await User.findById(decodedToken.userId).select('+refreshToken refreshTokenExpiry');
-    if (!user || user.refreshToken !== incomingRefreshToken || new Date() > user.refreshTokenExpiry) {
-        throw new ApiError(403, 'Invalid refresh token');
+    const user = await User.findById(decodedToken.userId).select('+refreshToken +refreshTokenExpiry');
+    if (!user) {
+        throw new ApiError(404, 'User not found for refresh token');
+    }
+    if (user.refreshToken !== incomingRefreshToken) {
+        throw new ApiError(403, 'Refresh token mismatch');
+    }
+    if (new Date() > user.refreshTokenExpiry) {
+        throw new ApiError(403, 'Refresh token expired');
     }
 
     const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);

@@ -1,8 +1,18 @@
 import mongoose from 'mongoose';
 
 const appointmentSchema = new mongoose.Schema({
-    patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-    doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    patientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true
+    },
+    doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true
+    },
     status: {
         type: String,
         enum: ['scheduled', 'confirmed', 'ongoing', 'completed', 'cancelled', 'no-show'],
@@ -13,14 +23,13 @@ const appointmentSchema = new mongoose.Schema({
         time: String, // "10:00-10:30"
         duration: { type: Number, default: 30 } // minutes
     },
-    type: { type: String, enum: ['video', 'audio', 'chat'], default: 'video' },
+    type: {
+        type: String,
+        enum: ['video', 'audio', 'chat'],
+        default: 'video'
+    },
     notes: String,
     fees: Number,
-    videoRoom: { // Phase 2
-        roomName: String,
-        password: String,
-        expires: Date
-    },
     noShowType: String // "doctor-late" | "patient-absent"
 }, { timestamps: true });
 

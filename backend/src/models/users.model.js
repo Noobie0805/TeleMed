@@ -55,17 +55,16 @@ const userSchema = new mongoose.Schema(
 );
 
 // Indexes bna rha.._________________________________________________________
-userSchema.index({ email: 1 });
+// userSchema.index({ email: 1 });
 userSchema.index({ role: 1, verificationStatus: 1 });
 userSchema.index({ refreshToken: 1 });
 
 //  Password hashing (use bcrypt.hash directly)______________________________________
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        return next();
+        return;
     }
-    this.password = await bcrypt.hash(this.password, 12);
-    next();
+    this.password = await bcrypt.hash(this.password, 12);;
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
@@ -73,7 +72,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 // JWT Token generation_________________________________________________________
-userSchema.methods.generateTokens = async function () {
+userSchema.methods.generateTokens = function () {
     const accessToken = jwt.sign(
         { userId: this._id, role: this.role },
         process.env.ACCESS_TOKEN_SECRET,
@@ -86,11 +85,10 @@ userSchema.methods.generateTokens = async function () {
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRE || '7d' }
     );
 
-    this.refreshToken = refreshToken;
-    this.refreshTokenExpiry = new Date(Date.now() +
+    const refreshTokenExpiry = new Date(Date.now() +
         parseDuration(process.env.REFRESH_TOKEN_EXPIRE || '7d'));
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, refreshTokenExpiry };
 };
 
 // Helper function to parse duration strings like '15m', '7d'________________________ 
@@ -101,3 +99,4 @@ const parseDuration = (duration) => {
 };
 
 export default mongoose.model('User', userSchema);
+

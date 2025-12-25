@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../models/users.js';
-import { ApiError } from '../utils/apiError.js';
-import { AsyncHandler } from '../utils/asyncHandler.js';
+import User from '../models/users.model.js';
+import { ApiError } from '../utils/ApiError.js';
+import { AsyncHandler } from '../utils/AsyncHandler.js';
 
-export const verifyJWT = AsyncHandler(async (req, res, next) => {
+const verifyJWT = AsyncHandler(async (req, res, next) => {
     const token = req.cookies?.accessToken ||
         req.header("Authorization")?.replace("Bearer ", "").trim();
 
@@ -24,7 +24,7 @@ export const verifyJWT = AsyncHandler(async (req, res, next) => {
 });
 
 // Refresh token verification
-export const verifyRefreshJWT = asyncHandler(async (req, res, next) => {
+const verifyRefreshJWT = AsyncHandler(async (req, res, next) => {
     const refreshToken = req.cookies?.refreshToken ||
         req.body.refreshToken ||
         req.header("x-refresh-token");
@@ -48,8 +48,8 @@ export const verifyRefreshJWT = asyncHandler(async (req, res, next) => {
 });
 
 // Role-based authorization
-export const authorizeRoles = (...allowedRoles) => {
-    return asyncHandler(async (req, res, next) => {
+const authorizeRoles = (...allowedRoles) => {
+    return AsyncHandler(async (req, res, next) => {
         if (!allowedRoles.includes(req.user.role)) {
             throw new ApiError(403, `Role ${req.user.role} not authorized for this action`);
         }
@@ -58,9 +58,12 @@ export const authorizeRoles = (...allowedRoles) => {
 };
 
 // Doctor verification check
-export const verifyDoctor = asyncHandler(async (req, res, next) => {
+const verifyDoctor = AsyncHandler(async (req, res, next) => {
     if (req.user.role !== 'doctor' || req.user.verificationStatus !== 'verified') {
         throw new ApiError(403, "Only verified doctors can perform this action");
     }
     next();
 });
+
+
+export { verifyDoctor, verifyJWT, verifyRefreshJWT, authorizeRoles };
