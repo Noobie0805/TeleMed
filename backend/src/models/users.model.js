@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema(
             age: { type: Number },
             gender: { type: String, enum: ['male', 'female', 'other'] },
             avatar: { type: String },
+            notes: { type: String }
         },
         verificationStatus: {
             type: String,

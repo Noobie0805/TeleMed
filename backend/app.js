@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './src/routes/v1/auth.routes.js';
 import appointmentRoutes from './src/routes/v1/appointments.routes.js';
 import adminRoutes from './src/routes/v1/admin.routes.js';
+import vitalRoutes from './src/routes/v1/vitals.routes.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/appointments', appointmentRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/vitals', vitalRoutes);
 
 // ADD ERROR HANDLER
 app.use((err, req, res, next) => {

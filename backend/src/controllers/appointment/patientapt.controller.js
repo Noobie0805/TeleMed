@@ -43,7 +43,7 @@ const bookAppointment = AsyncHandler(async (req, res) => {
     });
 
     return res.status(201).json(new ApiResponse(201, appointment, 'Appointment booked successfully'));
-});clea
+});
 
 // Delete appointment or cancel appointment 
 const deleteAppointment = AsyncHandler(async (req, res) => {

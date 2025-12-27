@@ -3,7 +3,6 @@ import User from "../../models/users.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 
-
 const verifyDoctor = AsyncHandler(async (req, res) => {
     const { doctorId } = req.params;
     const { status, notes } = req.body; // 'verified' | 'rejected'
