@@ -28,6 +28,17 @@ const appointmentSchema = new mongoose.Schema({
         enum: ['video', 'audio', 'chat'],
         default: 'video'
     },
+    videoSession: {
+        roomName: { type: String },
+        passCode: { type: String },
+        sessionId: { type: String },
+        doctorToken: { type: String },
+        patientToken: { type: String },
+        startWindow: { type: Date },
+        endWindow: { type: Date },
+        startedAt: { type: Date },
+        endedAt: { type: Date }
+    },
     notes: String,
     fees: Number,
     noShowType: String // "doctor-late" | "patient-absent"
