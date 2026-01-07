@@ -64,6 +64,9 @@ const loginUser = AsyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email }).select('+password');
+    if (user) {
+        console.log("User found:", user.email);
+    }
     if (!user || !(await user.comparePassword(password)) || !user.isActive) { // Instance method
         throw new ApiError(401, 'Invalid credentials');
     }

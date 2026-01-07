@@ -20,7 +20,8 @@ const appointmentSchema = new mongoose.Schema({
     },
     slot: {
         date: { type: Date, required: true },
-        time: String, // "10:00-10:30"
+        startTime: { type: String, required: true }, // "10:00"
+        endTime: { type: String, required: true }, // "10:30"
         duration: { type: Number, default: 30 } // minutes
     },
     type: {
@@ -39,9 +40,18 @@ const appointmentSchema = new mongoose.Schema({
         startedAt: { type: Date },
         endedAt: { type: Date }
     },
+    postConsult: {
+        notes: String,
+        prescription: String,
+        diagnosis: String,
+        followUpInstructions: String,
+        submittedAt: Date
+    },
+    patientRating: { type: Number, min: 1, max: 5 },
+    patientFeedback: String,
     notes: String,
-    fees: Number,
-    noShowType: String // "doctor-late" | "patient-absent"
+    fees: { type: Number, required: true, default: 0 },
+    noShowType: { type: String, enum: ['doctor-late', 'patient-absent'] }
 }, { timestamps: true });
 
 appointmentSchema.index({ patientId: 1, status: 1 });

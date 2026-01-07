@@ -1,7 +1,6 @@
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
-import User from "../../models/users.model.js";
 import Appointment from "../../models/appointments.model.js";
 
 // get doctor schedule__________________________________________________________
@@ -29,7 +28,6 @@ const getDoctorSchedule = AsyncHandler(async (req, res) => {
 });
 
 // booking confirmation_____________________________________________________
-
 const confirmBooking = AsyncHandler(async (req, res) => {
     const { appointmentId } = req.params;
 
