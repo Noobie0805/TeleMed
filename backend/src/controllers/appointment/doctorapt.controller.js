@@ -2,29 +2,63 @@ import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import Appointment from "../../models/appointments.model.js";
+import Vital from "../../models/vitals.model.js";
+import mongoose from "mongoose";
+
+// Helper function for IST today bounds (shared across controllers)
+const getISTTodayUTCBounds = () => {
+    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+
+    // Current time in UTC
+    const nowUTC = new Date();
+
+    // Get today's IST date parts
+    const istNow = new Date(nowUTC.getTime() + IST_OFFSET_MS);
+
+    // IST midnight
+    const istStart = new Date(istNow);
+    istStart.setHours(0, 0, 0, 0);
+
+    // IST tomorrow midnight
+    const istEnd = new Date(istStart);
+    istEnd.setDate(istEnd.getDate() + 1);
+
+    // Convert IST → UTC
+    const startUTC = new Date(istStart.getTime() - IST_OFFSET_MS);
+    const endUTC = new Date(istEnd.getTime() - IST_OFFSET_MS);
+
+    return { start: startUTC, end: endUTC };
+};
+
 
 // get doctor schedule__________________________________________________________
 const getDoctorSchedule = AsyncHandler(async (req, res) => {
-    const { date } = req.query;
-    const filter = {
+    const { start: startUTC, end: endUTC } = getISTTodayUTCBounds();
+
+    const appointments = await Appointment.find({
         doctorId: req.user._id,
-        status: { $in: ['scheduled', 'confirmed', 'ongoing'] }
-    };
-    if (date) {
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-        filter['slot.date'] = { $gte: startOfDay, $lte: endOfDay };
-    }
+        "slot.date": {
+            $gte: startUTC,
+            $lt: endUTC,
+        },
+        status: { $in: ["scheduled", "confirmed", "ongoing"] },
+    })
+        .populate("patientId", "profile.name profile.phone")
+        .sort({ "slot.date": 1, "slot.startTime": 1 })
+        .lean();
 
-    const appointmentsOfDay = await Appointment.find(filter)
-        .populate('patientId', 'profile.name profile.age profile.gender')
-        .sort({ 'slot.date': 1, 'slot.time': 1 })
-        .select('-videoRoom');
+    const schedule = appointments.map((apt) => ({
+        id: apt._id,
+        patient: apt.patientId.profile.name,
+        time: `${apt.slot.startTime} - ${apt.slot.endTime}`,
+        status: apt.status,
+        type: apt.type,
+        fees: apt.fees,
+    }));
 
-    return res.status(200).json(new ApiResponse(200, appointmentsOfDay));
-
+    return res.status(200).json(
+        new ApiResponse(200, schedule, "Today's schedule loaded")
+    );
 });
 
 // booking confirmation_____________________________________________________
@@ -48,10 +82,9 @@ const confirmBooking = AsyncHandler(async (req, res) => {
 });
 
 // cancel appointment by doctor_____________________________________________________
-
 const cancelBooking = AsyncHandler(async (req, res) => {
     const { appointmentId } = req.params;
-    const { reason } = req.body; // Add reason for cancellation
+    const { reason } = req.body;
 
     const appointment = await Appointment.findOne({
         _id: appointmentId,
@@ -73,42 +106,119 @@ const cancelBooking = AsyncHandler(async (req, res) => {
 });
 
 // getting waiting patients_____________________________________________________
-
 const getWaitingPatients = AsyncHandler(async (req, res) => {
-    const waitingAppointments = await Appointment.find({
-        doctorId: req.user._id,
-        status: 'confirmed'
-    })
-        .populate('patientId', 'profile.name profile.age profile.gender')
-        .sort({ 'slot.date': 1, 'slot.time': 1 })
-        .limit(50);
+    const { start: startUTC, end: endUTC } = getISTTodayUTCBounds();
 
-    return res.status(200).json(new ApiResponse(200, waitingAppointments));
+    const waiting = await Appointment.find({
+        doctorId: req.user._id,
+        status: "confirmed",
+        "slot.date": {
+            $gte: startUTC,
+            $lt: endUTC,
+        },
+    })
+        .populate("patientId", "profile.name profile.phone profile.avatar")
+        .sort({ "slot.date": 1, "slot.startTime": 1 })
+        .limit(10)
+        .lean();
+
+    return res.status(200).json(
+        new ApiResponse(200, waiting, "Waiting patients loaded")
+    );
 });
 
-//getting patient's history_____________________________________________________
+// getting patient's history_____________________________________________________
 const getPatientHistory = AsyncHandler(async (req, res) => {
     const { patientId } = req.params;
 
-    const hasAccess = await Appointment.findOne({
+    // Past appointments with this patient
+    const appointments = await Appointment.find({
         doctorId: req.user._id,
-        patientId: patientId,
-    });
-
-    if (!hasAccess) {
-        throw new ApiError(403, "You don't have access to this patient's history");
-    }
-
-    const history = await Appointment.find({
-        doctorId: req.user._id,
-        patientId: patientId,
-        status: 'completed'
+        patientId,
+        status: "completed",
     })
+        .populate("patientId", "profile.name profile.phone")
         .sort({ createdAt: -1 })
-        .limit(100);
+        .limit(10)
+        .lean();
 
-    return res.status(200).json(new ApiResponse(200, history, 'Patient history retrieved successfully'));
+    // Recent vitals trends (last 30 days)
+    const vitalsTrends = await Vital.aggregate([
+        {
+            $match: {
+                patientId: new mongoose.Types.ObjectId(patientId),
+                timestamp: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+            },
+        },
+        {
+            $group: {
+                _id: "$type",
+                recentReadings: { $push: { value: "$value", timestamp: "$timestamp" } },
+                count: { $sum: 1 },
+            },
+        },
+        { $sort: { _id: 1 } },
+        { $limit: 5 },
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            appointments,
+            vitalsTrends,
+        }, "Patient history loaded")
+    );
 });
 
+const getDoctorPerformance = AsyncHandler(async (req, res) => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-export { getDoctorSchedule, confirmBooking, cancelBooking, getWaitingPatients, getPatientHistory };
+    const metrics = await Appointment.aggregate([
+        { $match: { doctorId: req.user._id, createdAt: { $gte: thirtyDaysAgo } } },
+        {
+            $group: {
+                _id: null,
+                totalAppointments: { $sum: 1 },
+                completed: {
+                    $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+                },
+                noShows: {
+                    $sum: { $cond: [{ $eq: ["$status", "no-show"] }, 1, 0] },
+                },
+                avgRating: { $avg: "$patientRating" },
+                totalRevenue: {
+                    $sum: {
+                        $cond: [{ $eq: ["$status", "completed"] }, "$fees", 0]
+                    }
+                },
+                avgFees: { $avg: "$fees" },
+            },
+        },
+        {
+            $project: {
+                completionRate: {
+                    $round: [
+                        { $multiply: [{ $divide: ["$completed", "$totalAppointments"] }, 100] },
+                        1,
+                    ],
+                },
+                avgRating: { $round: ["$avgRating", 1] },
+                totalRevenue: 1,
+                totalAppointments: 1,
+                noShows: 1,
+            },
+        },
+    ]);
+
+    return res.status(200).json(
+        new ApiResponse(200, metrics[0] || {}, "Performance metrics loaded")
+    );
+});
+
+export {
+    getDoctorSchedule,
+    confirmBooking,
+    cancelBooking,
+    getWaitingPatients,
+    getPatientHistory,
+    getDoctorPerformance
+};

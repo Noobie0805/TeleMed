@@ -10,10 +10,10 @@ import {
     confirmBooking,
     cancelBooking,
     getWaitingPatients,
-    getPatientHistory
+    getPatientHistory,
+    getDoctorPerformance
 } from '../../controllers/appointment/doctorapt.controller.js';
 import { submitConsultNotes, submitPatientRatings } from '../../controllers/appointment/postConsult.controller.js';
-
 
 const router = express.Router();
 
@@ -28,10 +28,11 @@ router.put('/confirm/:appointmentId', authorizeRoles('doctor'), confirmBooking);
 router.put('/cancel/:appointmentId', authorizeRoles('doctor'), cancelBooking);
 router.get('/waiting-patients', authorizeRoles('doctor'), getWaitingPatients);
 router.get('/patient/:patientId/history', authorizeRoles('doctor'), getPatientHistory);
+router.get('/performance', authorizeRoles('doctor'), getDoctorPerformance);
 
 //postConsultations routes
-router.patch("/:id/notes", verifyJWT, authorizeRoles("doctor"), submitConsultNotes);
-router.patch("/:id/rate", verifyJWT, authorizeRoles("patient"), submitPatientRatings);
+router.patch("/:appointmentId/notes", verifyJWT, authorizeRoles("doctor"), submitConsultNotes);
+router.patch("/:appointmentId/rate", verifyJWT, authorizeRoles("patient"), submitPatientRatings);
 
 export default router;
 

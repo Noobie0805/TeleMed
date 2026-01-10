@@ -14,7 +14,7 @@ const HEALTH_THRESHOLDS = {
 };
 
 const logVital = AsyncHandler(async (req, res) => {
-    const { type, value, unit, notes } = req.body;
+    const { type, value, unit, notes, source } = req.body;
 
     if (!type || value === undefined) {
         throw new ApiError(400, 'Type and value are required');
@@ -25,7 +25,8 @@ const logVital = AsyncHandler(async (req, res) => {
         type,
         value,
         unit,
-        notes
+        notes,
+        source
     });
 
     return res.status(201).json(

@@ -6,10 +6,10 @@ import User from '../../models/users.model.js';
 
 // Book appointment
 const bookAppointment = AsyncHandler(async (req, res) => {
-    const { doctorId, date, time, type = 'video' } = req.body;
+    const { doctorId, date, startTime, endTime, type = 'video' } = req.body;
 
-    if (!doctorId || !date || !time) {
-        throw new ApiError(400, 'doctorId, date, and time are required');
+    if (!doctorId || !date || !startTime || !endTime) {
+        throw new ApiError(400, 'doctorId, date, startTime, and endTime are required');
     }
 
     // Check doctor availability & verification
@@ -26,7 +26,7 @@ const bookAppointment = AsyncHandler(async (req, res) => {
     const conflictingAppointment = await Appointment.findOne({
         doctorId,
         'slot.date': new Date(date),
-        'slot.time': time,
+        'slot.startTime': startTime,
         status: { $in: ['scheduled', 'confirmed', 'ongoing'] }
     });
 
@@ -37,7 +37,7 @@ const bookAppointment = AsyncHandler(async (req, res) => {
     const appointment = await Appointment.create({
         patientId: req.user._id,
         doctorId,
-        slot: { date: new Date(date), time },
+        slot: { date: new Date(date), startTime, endTime },
         type,
         status: 'scheduled'
     });

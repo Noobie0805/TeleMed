@@ -5,16 +5,23 @@ import Appointment from "../../models/appointments.model.js";
 
 
 const submitConsultNotes = AsyncHandler(async (req, res) => {
-    const { appointmentID } = req.params;
+    const { appointmentId } = req.params;
     const { notes, prescription, diagnosis, followUpInstructions } = req.body;
 
-    const appointment = await Appointment.findById(appointmentID);
-    if (!appointment || appointment.doctorId.toString().trim() !== req.user._id.toString().trim()) {
-        throw new ApiError(404, 'Appointment not found or unauthorized');
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+        throw new ApiError(404, 'Appointment not found');
+    }
+    if (appointment.doctorId.toString() !== req.user._id.toString()) {
+        throw new ApiError(403, 'Unauthorized to submit consultation for this appointment');
     }
     if (appointment.status !== 'completed') {
         throw new ApiError(400, 'Cannot submit consultation for incomplete appointment');
     }
+    if (appointment.postConsult?.submittedAt) {
+        throw new ApiError(400, 'Consultation already submitted');
+    }
+
     appointment.postConsult = appointment.postConsult || {};
     appointment.postConsult.notes = notes;
     appointment.postConsult.prescription = prescription;
@@ -41,6 +48,10 @@ const submitPatientRatings = AsyncHandler(async (req, res) => {
 
     if (appointment.status !== "completed") {
         throw new ApiError(400, "Can only rate completed appointments");
+    }
+
+    if (appointment.patientRating) {
+        throw new ApiError(400, "Rating already submitted");
     }
 
     // Normalize and validate rating
