@@ -12,7 +12,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
+    "bull": "^4.16.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -23,7 +25,14 @@
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.12",
+    "nodemailer-mailgun-transport": "^2.1.5",
     "nodemon": "^3.1.11",
-    "redis": "^5.10.0"
+    "redis": "^5.10.0",
+    "twilio": "^5.11.2"
+  },
+  "devDependencies": {
+    "@types/bull": "^3.15.9",
+    "@types/nodemailer": "^7.0.5"
   }
 }

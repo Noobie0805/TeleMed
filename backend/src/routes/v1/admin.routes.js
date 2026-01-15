@@ -19,6 +19,4 @@ router.get('/platform/overview', getPlatformOverview); // Get platform overview 
 router.get('/platform/revenue', getRevenueReport); // Get revenue report
 router.get('/audit-logs', getAuditLogs); // Get audit logs
 
-
-
 export default router;

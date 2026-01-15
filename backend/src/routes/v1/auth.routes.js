@@ -17,7 +17,7 @@ router.post('/register-doctor', registerDoctor);
 router.post('/login', loginUser);
 
 // Protected routes
-router.post('/refresh', refreshAccessToken);
+router.post('/refresh', verifyRefreshJWT, refreshAccessToken);
 router.post('/logout', verifyJWT, logoutUser);
 router.get('/me', verifyJWT, (req, res) => {
     return res.status(200).json(new ApiResponse(200, req.user, 'User profile fetched'));

@@ -1,0 +1,22 @@
+{
+  "name": "ai_",
+  "version": "1.0.0",
+  "description": "AI service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "sarvjeet",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "ioredis": "^5.9.1",
+    "nodemon": "^3.1.11",
+    "redis": "^5.10.0"
+  }
+}
