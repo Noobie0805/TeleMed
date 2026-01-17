@@ -1,5 +1,11 @@
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
-import axios from "axios";
+import { Groq } from "groq-sdk";
+import dotenv from "dotenv";
+dotenv.config();
+
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY || ""
+});
 
 const chatHandler = AsyncHandler(async (req, res) => {
     const { message, intent } = req.body;
@@ -10,68 +16,72 @@ const chatHandler = AsyncHandler(async (req, res) => {
         });
     }
 
-    // Safety-first system prompt
     const systemPrompt =
-        intent === "medicalBot" ?
-            `You are a medical information chatbot.
-    - Do NOT diagnose or prescribe medication.
-    - Provide only general health information.
-    - If symptoms seem serious or unclear, suggest using the symptom checker or consulting a doctor.
-    - Keep responses short, calm, and reassuring.`
-            :
-            `You are a telehealth platform assistant.
-    - Help users with appointments, platform features, and general usage.
-    - Do NOT provide medical advice.`;
+        intent === "medicalBot"
+            ? `
+You are a medical information chatbot.
 
-    // Prompt with injection protection
-    const prompt = `${systemPrompt}
-    User message:"${String(message).slice(0, 500)}"
-    Assistant:`;
+RULES:
+- Do NOT diagnose or prescribe medication.
+- Provide only general health information.
+- If symptoms seem serious or unclear, suggest using the symptom checker or consulting a doctor.
+- Keep responses short, calm, and reassuring.
+`
+            : `
+You are a telehealth platform assistant.
 
-    // Primary + fallback models
-    const models = [
-        "mistralai/Mistral-7B-Instruct-v0.3",
-        "google/gemma-2b-it"
-    ];
+RULES:
+- Help users with appointments, scheduling, and platform features.
+- Do NOT provide medical advice.
+- Keep answers concise and helpful.
+`;
 
-    let responseText = null;
+    const models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "qwen/qwen3-32b"];
 
+    let completion;
     for (const model of models) {
         try {
-            const aiResp = await axios.post(
-                "https://api-inference.huggingface.co/models/" + model,
-                {
-                    inputs: prompt,
-                    parameters: {
-                        max_new_tokens: 120,
-                        temperature: intent === "medicalBot" ? 0.3 : 0.7
-                    }
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${process.env.HF_TOKEN}`
+            completion = await groq.chat.completions.create({
+                model: model,
+                temperature: intent === "medicalBot" ? 0.3 : 0.7,
+                max_tokens: 150,
+                messages: [
+                    {
+                        role: "system",
+                        content: systemPrompt.trim()
                     },
-                    timeout: 8000
-                }
-            );
-
-            const rawText = aiResp.data?.[0]?.generated_text || "";
-            responseText = rawText.replace(prompt, "").trim();
-
-            console.log(`Chat response generated using model: ${model}`);
-            break;
-        } catch (error) {
-            console.log(`Model ${model} failed, trying fallback. Error: ${error.message}`);
+                    {
+                        role: "user",
+                        content: String(message).slice(0, 500) // injection guard
+                    }
+                ]
+            });
+            if (completion) {
+                console.log(`Model ${model} succeeded.`);
+                break;
+            };
+        } catch (err) {
+            console.error(`Model ${model} error:`, err.message);
+            return res.status(503).json({
+                response:
+                    intent === "medicalBot"
+                        ? "I can provide general health information, but for symptoms I recommend using the symptom checker or consulting a doctor."
+                        : "I can help with appointments and platform features. Please try again.",
+                suggestedAction: intent === "medicalBot" ? "symptom_check" : "book_appointment"
+            });
         }
     }
 
+
+
+    const responseText = completion?.choices?.[0]?.message?.content?.trim() ||
+        (intent === "medicalBot"
+            ? "I can provide general health information, but for symptoms I recommend using the symptom checker or consulting a doctor."
+            : "I can help with appointments and platform features. Please try again.");
+
     return res.status(200).json({
-        response:
-            responseText ||
-            (intent === "medicalBot"
-                ? "I can provide general health information, but for symptoms I recommend using the symptom checker or consulting a doctor."
-                : "I can help with appointments and platform features. Please try again."),
-        action: intent === "medicalBot" ? "symptom_check" : "book_appointment"
+        response: responseText,
+        suggestedAction: intent === "medicalBot" ? "symptom_check" : "book_appointment"
     });
 });
 
