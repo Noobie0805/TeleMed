@@ -1,8 +1,8 @@
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { ApiError } from "../../utils/ApiError.js";
-import User from "../../../models/users.model.js";
-import Appointment from "../../../models/appointments.model.js";
+import User from "../../models/users.model.js";
+// import Appointment from "../../models/appointments.model.js";
 
 const getDoctorReferrals = AsyncHandler(async (req, res) => {
     const { specialties, urgency, location } = req.query;  // From AI symptom output
@@ -28,7 +28,7 @@ const getDoctorReferrals = AsyncHandler(async (req, res) => {
         'doctor.specialties': { $in: specialtyList },
         ...(location && { 'profile.city': location })
     })
-        .select('profile.name avatar doctor.specialty availability rating')
+        .select('profile.name avatar doctor.specialties availability rating')
         .sort({ rating: -1, availability: 1 })
         .limit(3)
         .lean();

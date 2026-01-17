@@ -30,9 +30,9 @@ const submitSymptoms = AsyncHandler(async (req, res) => {
 
     const session = await symptomSession.create({
         patientId: req.user._id,
-        symptoms: symptoms.map(s => ({ name: s.name, severity: s.severity })),
+        symptoms: symptoms.map(s => ({ name: s.name, severity: s.severity, duration: s.duration })),
         urgency: aiResponse.data.urgency,
-        suggestedSpecialities: aiResponse.data.specialties,
+        suggestedSpecialities: aiResponse.data.suggestedSpecialities,
         appointmentId,
     });
 

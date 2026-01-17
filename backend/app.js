@@ -6,6 +6,7 @@ import appointmentRoutes from './src/routes/v1/appointments.routes.js';
 import adminRoutes from './src/routes/v1/admin.routes.js';
 import vitalRoutes from './src/routes/v1/vitals.routes.js';
 import videoSessionRoutes from './src/routes/v1/videoSession.routes.js';
+import AIServiceRoutes from './src/routes/v1/aiService.routes.js';
 import "./src/utils/cleanupCron.js";
 
 const app = express();
@@ -21,6 +22,8 @@ app.use('/api/v1/appointments', appointmentRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/vitals', vitalRoutes);
 app.use('/api/v1/video', videoSessionRoutes);
+
+app.use('/api/v1/ai', AIServiceRoutes);
 
 // ADD ERROR HANDLER
 app.use((err, req, res, next) => {

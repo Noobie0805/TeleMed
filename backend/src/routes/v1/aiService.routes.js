@@ -1,4 +1,4 @@
-import { getDoctorReferrals } from "../../controllers/AI_service/doctorReferral.controller";
+import { getDoctorReferrals } from "../../controllers/AI_service/doctorReferral.controller.js";
 import { sendChatMessage } from "../../controllers/AI_service/chatbot.controller.js";
 import { submitSymptoms } from "../../controllers/AI_service/symptomChecker.controller.js";
 import { scheduleFromReferral } from "../../controllers/AI_service/scheduling.controller.js";

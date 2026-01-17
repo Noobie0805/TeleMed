@@ -12,7 +12,7 @@ const symptomSessionSchema = new mongoose.Schema({
         severity: { type: Number, min: 1, max: 10, required: true },
         duration: String
     }],
-    urgency: { type: String, enum: ['mild', 'moderate', 'severe'], required: true },
+    urgency: { type: String, enum: ['mild', 'moderate', 'severe'] },
     suggestedSpecialities: [String],
     appointmentId: {
         type: mongoose.Schema.Types.ObjectId,

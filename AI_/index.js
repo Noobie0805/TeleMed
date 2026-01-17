@@ -6,9 +6,7 @@ import { chatHandler } from './src/controllers/chat.controller.js';
 import { cacheMiddleware } from './src/middlewares/cache.redis.js';
 import { internalAuth } from './src/middlewares/internalAuth.middleware.js';
 
-dotenv.config({
-    path: './.env'
-});
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3001;
