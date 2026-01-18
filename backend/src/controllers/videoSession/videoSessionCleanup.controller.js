@@ -1,5 +1,5 @@
-import { ApiResponse } from "../../utils/ApiResponse.js";
-import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import { ApiResponse } from "../../utils/apiResponse.js";
+import { AsyncHandler } from "../../utils/asyncHandler.js";
 // import { ApiError } from "../../utils/ApiError";
 import { cleanupStaleSessions } from "../../services/appointmentsCleanup.service.js";
 

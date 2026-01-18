@@ -1,7 +1,7 @@
-import { AsyncHandler } from '../../utils/AsyncHandler.js';
+import { AsyncHandler } from '../../utils/asyncHandler.js';
 import Vital from '../../models/vitals.model.js';
-import { ApiError } from '../../utils/ApiError.js';
-import { ApiResponse } from '../../utils/ApiResponse.js';
+import { ApiError } from '../../utils/apiError.js';
+import { ApiResponse } from '../../utils/apiResponse.js';
 // import { verifyJWT } from '../../middlewares/auth.middleware.js';
 
 // Health scoring thresholds

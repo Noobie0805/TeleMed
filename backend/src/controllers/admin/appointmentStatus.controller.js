@@ -1,5 +1,5 @@
-import { AsyncHandler } from "../../utils/AsyncHandler.js";
-import { ApiResponse } from "../../utils/ApiResponse.js";
+import { AsyncHandler } from "../../utils/asyncHandler.js";
+import { ApiResponse } from "../../utils/apiResponse.js";
 import Appointment from "../../models/appointments.model.js";
 
 const getAppointmentStats = AsyncHandler(async (req, res) => {
