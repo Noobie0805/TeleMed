@@ -1,7 +1,7 @@
-import { AsyncHandler } from '../../utils/AsyncHandler.js';
+import { AsyncHandler } from '../../utils/asyncHandler.js';
 import User from '../../models/users.model.js';
-import { ApiError } from '../../utils/ApiError.js';
-import { ApiResponse } from '../../utils/ApiResponse.js';
+import { ApiError } from '../../utils/apiError.js';
+import { ApiResponse } from '../../utils/apiResponse.js';
 import jwt from 'jsonwebtoken';
 
 const generateAccessRefreshToken = async (userId) => {

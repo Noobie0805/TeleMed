@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyJWT, verifyRefreshJWT } from '../../middleware/auth.middleware.js';
-import { ApiResponse } from '../../utils/ApiResponse.js';
+import { ApiResponse } from '../../utils/apiResponse.js';
 import {
     registerUser,
     loginUser,

@@ -1,4 +1,4 @@
-import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { Groq } from "groq-sdk";
 import dotenv from "dotenv";
 dotenv.config();
