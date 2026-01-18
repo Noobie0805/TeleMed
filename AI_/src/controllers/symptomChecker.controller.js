@@ -38,7 +38,7 @@ const symptomCheckerHandler = AsyncHandler(async (req, res) => {
             throw new ApiError(400, "Each symptom must have a valid name.");
         }
         if (s.severity === undefined || typeof s.severity !== "number" || s.severity < 1 || s.severity > 10) {
-            throw new ApiError(400, "Severity is required and must be between 1–10.");
+            throw new ApiError(400, "Severity is required and must be between 1-10.");
         }
     }
 
@@ -49,7 +49,7 @@ STRICT RULES:
 - Do NOT diagnose or prescribe.
 - Provide only general, non-diagnostic information.
 - Classify urgency as: mild | moderate | severe.
-- Suggest ONLY 1–3 medical specialities.
+- Suggest ONLY 1-3 medical specialities.
 - If symptoms may indicate emergency → urgency = "severe".
 - Output VALID JSON ONLY. No markdown. No explanations.
 
