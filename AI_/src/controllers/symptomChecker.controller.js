@@ -10,10 +10,6 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
 });
 
-// if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY.trim() === "") {
-//     console.warn("Warning: GROQ_API_KEY is not set in environment variables.");
-// }
-
 const symptomCheckerHandler = AsyncHandler(async (req, res) => {
     const { age, gender, symptoms, duration, existingConditions } = req.body;
 
