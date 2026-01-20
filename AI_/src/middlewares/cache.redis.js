@@ -1,31 +1,50 @@
-import Redis from 'ioredis';
+import Redis from "ioredis";
+import crypto from "crypto";
 import { AsyncHandler } from "../utils/asyncHandler.utils.js";
 import { ApiResponse } from "../utils/apiResponse.utils.js";
-import { ApiError } from "../utils/apiError.utils.js";
 
-const redisClient = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+let redisClient;
+if (process.env.REDIS_URL) {
+    redisClient = new Redis(process.env.REDIS_URL);
+    redisClient.on("error", err =>
+        console.warn("Redis error (ignored):", err.message)
+    );
+}
 
-const cacheMiddleware = (duration = 300) => AsyncHandler(async (req, res, next) => {  // Fix: Arrow function syntax
-    const cacheKey = `ai:${req.path}:${JSON.stringify(req.body)}`;
+const hashBody = (body) =>
+    crypto.createHash("sha256").update(JSON.stringify(body)).digest("hex");
 
-    try {
-        const cachedResponse = await redisClient.get(cacheKey);
-        if (cachedResponse) {
-            return res.status(200).json(new ApiResponse(200, JSON.parse(cachedResponse), "Cache hit"));
+const cacheMiddleware = (duration = 300) =>
+    AsyncHandler(async (req, res, next) => {
+        if (!redisClient) return next();
+        if (req.method !== "POST") return next();
+
+        const cacheKey = `ai:${req.path}:${hashBody(req.body)}`;
+
+        try {
+            const cached = await redisClient.get(cacheKey);
+            if (cached) {
+                return res
+                    .status(200)
+                    .json(new ApiResponse(200, JSON.parse(cached), "Cache hit"));
+            }
+
+            const originalJson = res.json;
+            res.json = function (response) {
+                if (response?.data) {
+                    redisClient.setex(
+                        cacheKey,
+                        duration,
+                        JSON.stringify(response.data)
+                    );
+                }
+                return originalJson.call(this, response);
+            };
+
+            next();
+        } catch {
+            next();
         }
-
-        // Cache successful responses
-        const originalJson = res.json;
-        res.json = function (data) {
-            redisClient.setex(cacheKey, duration, JSON.stringify(data));  // function() scope
-            originalJson.call(this, data);
-        };
-
-        next();
-    } catch (error) {
-        console.error('Redis cache error:', error.message);  // Log but don't fail
-        next();  // Graceful degradation
-    }
-});
+    });
 
 export { cacheMiddleware };
