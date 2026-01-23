@@ -10,6 +10,6 @@ const router = express.Router();
 router.post('/schedule', scheduleFromReferral);
 router.get('/doctorReferrals', getDoctorReferrals);
 router.post('/chat', sendChatMessage);
-router.post('/symptoms', submitSymptoms);
+router.post('/symptomChecker', submitSymptoms);
 
 export default router;
