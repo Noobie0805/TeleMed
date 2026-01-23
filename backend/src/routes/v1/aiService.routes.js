@@ -7,7 +7,7 @@ import express from 'express';
 
 const router = express.Router();
 
-router.use(verifyJWT, authorizeRoles('patient'));
+router.use(authorizeRoles('patient'));
 
 router.post('/schedule', scheduleFromReferral);
 router.get('/doctorReferrals', getDoctorReferrals);
