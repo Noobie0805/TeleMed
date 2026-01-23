@@ -2,10 +2,12 @@ import { getDoctorReferrals } from "../../controllers/AI_service/doctorReferral.
 import { sendChatMessage } from "../../controllers/AI_service/chatbot.controller.js";
 import { submitSymptoms } from "../../controllers/AI_service/symptomChecker.controller.js";
 import { scheduleFromReferral } from "../../controllers/AI_service/scheduling.controller.js";
-import { verifyJWT, authorizeRoles } from "../../middleware/auth.middleware.js";
+import { verifyJWT } from "../../middleware/auth.middleware.js";
 import express from 'express';
 
 const router = express.Router();
+
+router.use(verifyJWT);
 
 router.post('/schedule', scheduleFromReferral);
 router.get('/doctorReferrals', getDoctorReferrals);
