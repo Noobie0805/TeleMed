@@ -7,8 +7,6 @@ import express from 'express';
 
 const router = express.Router();
 
-router.use(authorizeRoles('patient'));
-
 router.post('/schedule', scheduleFromReferral);
 router.get('/doctorReferrals', getDoctorReferrals);
 router.post('/chat', sendChatMessage);
