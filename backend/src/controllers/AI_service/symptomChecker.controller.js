@@ -15,30 +15,39 @@ const submitSymptoms = AsyncHandler(async (req, res) => {
     }
 
     // sending data to AI service
-    const aiResponse = await axios.post(`${process.env.AI_SERVICE_URL}/symptomChecker`,
-        { age, gender, symptoms, duration, existingConditions },
-        {
-            headers: { Authorization: `Bearer ${process.env.AI_INTERNAL_KEY}` },
-            timeout: 15000
-        }
-    );
+    let aiResponse;
+    try {
+        aiResponse = await axios.post(`${process.env.AI_SERVICE_URL}/symptomChecker`,
+            { age, gender, symptoms, duration, existingConditions },
+            {
+                headers: { Authorization: `Bearer ${process.env.AI_INTERNAL_KEY}` },
+                timeout: 15000
+            }
+        );
+    } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message || 'AI service error';
+        throw new ApiError(503, `AI service unavailable: ${errorMessage}`);
+    }
 
-    if (aiResponse.data.urgency === 'severe') {
-        aiResponse.data.emergencyOverride = true;
-        aiResponse.data.message = "SEVERE symptoms detected. Seek immediate medical attention.";
+    // Extract data from nested response structure
+    const analysisData = aiResponse.data.data || aiResponse.data;
+
+    if (analysisData.urgency === 'severe') {
+        analysisData.emergencyOverride = true;
+        analysisData.message = "SEVERE symptoms detected. Seek immediate medical attention.";
     }
 
     const session = await symptomSession.create({
         patientId: req.user._id,
         symptoms: symptoms.map(s => ({ name: s.name, severity: s.severity, duration: s.duration })),
-        urgency: aiResponse.data.urgency,
-        suggestedSpecialities: aiResponse.data.suggestedSpecialities,
+        urgency: analysisData.urgency,
+        suggestedSpecialities: analysisData.suggestedSpecialities,
         appointmentId,
     });
 
     return res.status(200).json(new ApiResponse(201, {
         sessionId: session._id,
-        analysis: aiResponse.data,
+        analysis: analysisData,
         disclaimer: "AI insights only. Consult a doctor."
     }, "Symptoms analyzed successfully."));
 

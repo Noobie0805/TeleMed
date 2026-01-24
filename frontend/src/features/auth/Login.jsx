@@ -11,12 +11,18 @@ const Login = ({ onLogin }) => {
         e.preventDefault();
         try {
             const { data } = await api.post('/auth/login', formData);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            onLogin(data.user);
+            // Extract correctly from your backend structure
+            const accessToken = data.data.tokens.accessToken;
+            const userData = data.data.user;
+
+            localStorage.setItem('token', accessToken);
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            onLogin(userData);
         } catch (err) {
             setError('Invalid credentials');
         }
+
     };
 
     return (
@@ -25,7 +31,7 @@ const Login = ({ onLogin }) => {
             <input type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
             {error && <p className="error">{error}</p>}
             <button type="submit">Login</button>
-        </form> 
+        </form>
     );
 };
 

@@ -30,6 +30,7 @@ function App() {
           <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/symptoms" />} />
           <Route path="/symptoms" element={<RequireAuth><SymptomChecker /></RequireAuth>} />
         </Routes>
+        {loading && <div className="loading-overlay">Loading...</div>}
       </div>
     </Router>
   );

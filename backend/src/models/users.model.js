@@ -27,8 +27,16 @@ const userSchema = new mongoose.Schema(
             age: { type: Number },
             gender: { type: String, enum: ['male', 'female', 'other'] },
             avatar: { type: String },
-            notes: { type: String }
+            notes: { type: String },
+            // Doctor-specific fields
+            specialty: { type: String },
+            experience: { type: Number, default: 0 },
+            qualifications: [String],
+            licenseNumber: { type: String }
         },
+        // Doctor ratings and reviews
+        rating: { type: Number, min: 1, max: 5, default: 5 },
+        reviewCount: { type: Number, default: 0 },
         verificationStatus: {
             type: String,
             enum: ['pending', 'verified', 'rejected'],

@@ -1,4 +1,6 @@
 import { AsyncHandler } from "../utils/asyncHandler.utils.js";
+import { ApiResponse } from "../utils/apiResponse.utils.js";
+import { ApiError } from "../utils/apiError.utils.js";
 import { Groq } from "groq-sdk";
 import dotenv from "dotenv";
 dotenv.config();
@@ -39,8 +41,11 @@ RULES:
     const models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "qwen/qwen3-32b"];
 
     let completion;
+    let lastError;
+
     for (const model of models) {
         try {
+            console.log(`Trying model: ${model}`);
             completion = await groq.chat.completions.create({
                 model: model,
                 temperature: intent === "medicalBot" ? 0.3 : 0.7,
@@ -59,30 +64,28 @@ RULES:
             if (completion) {
                 console.log(`Model ${model} succeeded.`);
                 break;
-            };
+            }
         } catch (err) {
+            lastError = err;
             console.error(`Model ${model} error:`, err.message);
-            return res.status(503).json({
-                response:
-                    intent === "medicalBot"
-                        ? "I can provide general health information, but for symptoms I recommend using the symptom checker or consulting a doctor."
-                        : "I can help with appointments and platform features. Please try again.",
-                suggestedAction: intent === "medicalBot" ? "symptom_check" : "book_appointment"
-            });
         }
     }
 
-
+    if (!completion) {
+        throw new ApiError(503, "AI service temporarily unavailable. Please try again later.");
+    }
 
     const responseText = completion?.choices?.[0]?.message?.content?.trim() ||
         (intent === "medicalBot"
             ? "I can provide general health information, but for symptoms I recommend using the symptom checker or consulting a doctor."
             : "I can help with appointments and platform features. Please try again.");
 
-    return res.status(200).json({
-        response: responseText,
-        suggestedAction: intent === "medicalBot" ? "symptom_check" : "book_appointment"
-    });
+    return res.status(200).json(
+        new ApiResponse(200, {
+            response: responseText,
+            suggestedAction: intent === "medicalBot" ? "symptom_check" : "book_appointment"
+        }, "Chat response generated successfully")
+    );
 });
 
 export { chatHandler };

@@ -68,6 +68,7 @@ JSON FORMAT:
     let completion;
     for (const model of models) {
         try {
+            console.log('Calling Groq model:', model);
             completion = await groq.chat.completions.create({
                 model: model,
                 temperature: 0.1,

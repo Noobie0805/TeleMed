@@ -25,12 +25,10 @@ export const registerDoctor = AsyncHandler(async (req, res) => {
         profile: {
             name,
             phone,
-            doctor: {
-                specialty,
-                experience: Number.isFinite(Number(experience)) ? Number(experience) : 0,
-                qualifications: normalizedQualifications,
-                licenseNumber
-            }
+            specialty,
+            experience: Number.isFinite(Number(experience)) ? Number(experience) : 0,
+            qualifications: normalizedQualifications,
+            licenseNumber
         },
         verificationStatus: 'pending',
         isActive: false,

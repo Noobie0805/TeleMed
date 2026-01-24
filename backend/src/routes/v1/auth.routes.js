@@ -5,7 +5,8 @@ import {
     registerUser,
     loginUser,
     logoutUser,
-    refreshAccessToken
+    refreshAccessToken,
+    getDoctors
 } from '../../controllers/auth/patient.controller.js';
 import { registerDoctor } from '../../controllers/auth/doctor.controller.js';
 
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post('/register-patient', registerUser);
 router.post('/register-doctor', registerDoctor);
 router.post('/login', loginUser);
+router.get('/doctors', getDoctors); // Get list of verified doctors with optional specialty filter
 
 // Protected routes
 router.post('/refresh', verifyRefreshJWT, refreshAccessToken);

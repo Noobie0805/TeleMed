@@ -154,6 +154,28 @@ const logoutUser = AsyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, {}, 'User logged out successfully'));
 });
 
+// GET DOCTORS LIST _____________________________________________________________
+const getDoctors = AsyncHandler(async (req, res) => {
+    const { specialty } = req.query;
 
+    const filter = {
+        role: 'doctor',
+        verificationStatus: 'verified',
+        isActive: true
+    };
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+    if (specialty) {
+        filter['profile.specialty'] = specialty;
+    }
+
+    const doctors = await User.find(filter)
+        .select('-password -refreshToken -refreshTokenExpiry -verificationDocs')
+        .sort({ rating: -1 });
+
+    return res.status(200).json(new ApiResponse(200, {
+        data: doctors,
+        count: doctors.length
+    }, 'Doctors fetched successfully'));
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, getDoctors };
