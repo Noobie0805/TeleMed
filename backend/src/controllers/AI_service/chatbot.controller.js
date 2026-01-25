@@ -47,8 +47,12 @@ const sendChatMessage = AsyncHandler(async (req, res) => {
 
     return res.json(
         new ApiResponse(200, {
-            response: aiResponse.data.response,
-            suggestedAction: aiResponse.data.action,  // 'book_appointment', 'symptom_check'
+            // AI_ service returns an ApiResponse wrapper: { data: { response, suggestedAction } }
+            // Cache hits also preserve this wrapper, so we consistently read from `.data`.
+            response: (aiResponse?.data?.data ?? aiResponse?.data)?.response,
+            suggestedAction:
+                (aiResponse?.data?.data ?? aiResponse?.data)?.suggestedAction ??
+                (aiResponse?.data?.data ?? aiResponse?.data)?.action, // legacy fallback
             disclaimer: context === 'medical' ? "Consult a doctor for medical advice." : null
         }, "AI response generated")
     );

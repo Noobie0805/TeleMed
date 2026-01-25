@@ -40,22 +40,23 @@ const registerUser = AsyncHandler(async (req, res) => {
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = {
+    // Cookie options for cross-origin support
+    // sameSite: "none" requires secure: true
+    const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // Not always secure in dev
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        secure: process.env.NODE_ENV === "production", // HTTPS required in production
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" for cross-origin in production
     };
 
 
     const responseData = new ApiResponse(201, {
         user: createdUser,
-        tokens: { accessToken, refreshToken }
+        tokens: { accessToken }
     }, "Patient registered successfully!");
 
     return res.status(201)
-        .cookie('refreshToken', refreshToken, options)
-        .cookie('accessToken', accessToken, options)
+        .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 }) // 7 days
+        .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 }) // 15 minutes
         .json(responseData);
 });
 
@@ -78,62 +79,84 @@ const loginUser = AsyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-    const options = {
+    // Cookie options for cross-origin support
+    // sameSite: "none" requires secure: true
+    const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 15 * 60 * 1000 // 15min for access
+        secure: process.env.NODE_ENV === "production", // HTTPS required in production
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" for cross-origin in production
     };
 
     const responseData = new ApiResponse(200, {
         user: loggedInUser,
-        tokens: { accessToken, refreshToken }
+        tokens: { accessToken }
     }, "User logged in successfully!");
 
     return res.status(200)
-        .cookie('accessToken', accessToken, options)
-        .cookie('refreshToken', refreshToken, { ...options, maxAge: 7 * 24 * 60 * 60 * 1000 })
+        .cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 15 * 60 * 1000 }) // 15 minutes
+        .cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000 }) // 7 days
         .json(responseData);
 });
 
 // REFRESH ACCESS TOKEN _________________________________________________________
 const refreshAccessToken = AsyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken;
+    const incomingRefreshToken = req.cookies?.refreshToken;
+  
     if (!incomingRefreshToken) {
-        throw new ApiError(400, 'Refresh token required');
+      throw new ApiError(401, "Refresh token missing");
     }
-
+  
     let decodedToken;
     try {
-        decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-    } catch (err) {
-        throw new ApiError(401, 'Refresh token malformed or expired');
+      decodedToken = jwt.verify(
+        incomingRefreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+    } catch {
+      throw new ApiError(401, "Refresh token invalid or expired");
     }
-
-    const user = await User.findById(decodedToken.userId).select('+refreshToken +refreshTokenExpiry');
+  
+    const user = await User.findById(decodedToken.userId)
+      .select("+refreshToken +refreshTokenExpiry");
+  
     if (!user) {
-        throw new ApiError(404, 'User not found for refresh token');
+      throw new ApiError(404, "User not found");
     }
+  
     if (user.refreshToken !== incomingRefreshToken) {
-        throw new ApiError(403, 'Refresh token mismatch');
+      throw new ApiError(403, "Refresh token mismatch");
     }
+  
     if (new Date() > user.refreshTokenExpiry) {
-        throw new ApiError(403, 'Refresh token expired');
+      throw new ApiError(403, "Refresh token expired");
     }
-
-    const { accessToken, refreshToken } = await generateAccessRefreshToken(user._id);
-
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict"
+  
+    const { accessToken, refreshToken } =
+      await generateAccessRefreshToken(user._id);
+  
+    // Cookie options for cross-origin support
+    // sameSite: "none" requires secure: true
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS required in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" for cross-origin in production
     };
-
-    return res.status(200)
-        .cookie('accessToken', accessToken, { ...options, maxAge: 15 * 60 * 1000 })
-        .cookie('refreshToken', refreshToken, { ...options, maxAge: 7 * 24 * 60 * 60 * 1000 })
-        .json(new ApiResponse(200, { accessToken, refreshToken }, 'Access token refreshed'));
-});
+  
+    return res
+      .status(200)
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken },  // frontend stores this
+          "Access token refreshed"
+        )
+      );
+  });
+  
 
 // LOGOUT _______________________________________________________________________
 const logoutUser = AsyncHandler(async (req, res) => {
@@ -142,14 +165,15 @@ const logoutUser = AsyncHandler(async (req, res) => {
         refreshTokenExpiry: null
     }, { validateBeforeSave: false });
 
-    const options = {
+    // Cookie options must match the ones used when setting cookies
+    const cookieOptions = {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict"
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
 
-    res.clearCookie('accessToken', options);
-    res.clearCookie('refreshToken', options);
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
 
     return res.status(200).json(new ApiResponse(200, {}, 'User logged out successfully'));
 });

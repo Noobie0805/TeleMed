@@ -25,9 +25,8 @@ const verifyJWT = AsyncHandler(async (req, res, next) => {
 
 // Refresh token verification
 const verifyRefreshJWT = AsyncHandler(async (req, res, next) => {
-    const refreshToken = req.cookies?.refreshToken ||
-        req.body.refreshToken ||
-        req.header("x-refresh-token");
+    // refreshToken should only come from HTTPOnly cookie for security
+    const refreshToken = req.cookies?.refreshToken;
 
     if (!refreshToken || typeof refreshToken !== "string") {
         throw new ApiError(401, "Refresh token required");
