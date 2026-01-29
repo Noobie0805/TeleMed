@@ -1,6 +1,7 @@
 import { AsyncHandler } from '../../utils/asyncHandler.js';
 import { ApiError } from '../../utils/apiError.js';
 import { ApiResponse } from '../../utils/apiResponse.js';
+import { convertISTDateToUTC, getISTDateUTCBounds } from '../../utils/timezone.js';
 import Appointment from '../../models/appointments.model.js'; // fix: import the model
 import User from '../../models/users.model.js';
 
@@ -10,6 +11,11 @@ const bookAppointment = AsyncHandler(async (req, res) => {
 
     if (!doctorId || !date || !startTime || !endTime) {
         throw new ApiError(400, 'doctorId, date, startTime, and endTime are required');
+    }
+
+    // Validate date format (should be YYYY-MM-DD)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        throw new ApiError(400, 'Invalid date format. Expected YYYY-MM-DD');
     }
 
     // Check doctor availability & verification
@@ -22,10 +28,19 @@ const bookAppointment = AsyncHandler(async (req, res) => {
     // if (!doctor || doctor.role !== 'doctor') {
     //     throw new ApiError(400, 'Doctor not available');
     // }
+
+    // Convert date to IST midnight UTC for consistent storage and querying
+    const istDateUTC = convertISTDateToUTC(date);
+    const { start: dateStartUTC, end: dateEndUTC } = getISTDateUTCBounds(date);
+
     // CHECK FOR CONFLICTING APPOINTMENTS
+    // Check for any appointment on the same date (IST) with the same start time
     const conflictingAppointment = await Appointment.findOne({
         doctorId,
-        'slot.date': new Date(date),
+        'slot.date': {
+            $gte: dateStartUTC,
+            $lt: dateEndUTC
+        },
         'slot.startTime': startTime,
         status: { $in: ['scheduled', 'confirmed', 'ongoing'] }
     });
@@ -37,7 +52,7 @@ const bookAppointment = AsyncHandler(async (req, res) => {
     const appointment = await Appointment.create({
         patientId: req.user._id,
         doctorId,
-        slot: { date: new Date(date), startTime, endTime },
+        slot: { date: istDateUTC, startTime, endTime },
         type,
         status: 'scheduled'
     });

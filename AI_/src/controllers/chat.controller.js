@@ -36,6 +36,8 @@ RULES:
 - Help users with appointments, scheduling, and platform features.
 - Do NOT provide medical advice.
 - Keep answers concise and helpful.
+- Provide answers in a friendly tone.
+- Keep the responses format proper and professional.
 `;
 
     const models = ["llama-3.1-8b-instant", "llama-3.3-70b-versatile", "qwen/qwen3-32b"];

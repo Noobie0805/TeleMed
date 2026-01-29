@@ -1,0 +1,141 @@
+.vitals-page {
+  max-width: 960px;
+}
+
+.vitals-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.vitals-section-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.vitals-log,
+.vitals-summary {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.vitals-log-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vitals-log-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.vitals-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 120px;
+  font-size: 14px;
+}
+
+.vitals-label {
+  margin-bottom: 4px;
+  color: #4b5563;
+}
+
+.vitals-field input,
+.vitals-field select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.vitals-log-actions {
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vitals-log-actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.vitals-log-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.vitals-score-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vitals-score-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.vitals-score-insights {
+  padding-left: 18px;
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.vitals-charts {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 14px 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.vitals-charts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.vitals-charts-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.vitals-refresh {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.vitals-chart-wrapper {
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .vitals-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

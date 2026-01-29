@@ -1,34 +1,10 @@
 import { AsyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/apiError.js";
 import { ApiResponse } from "../../utils/apiResponse.js";
+import { getISTTodayUTCBounds } from "../../utils/timezone.js";
 import Appointment from "../../models/appointments.model.js";
 import Vital from "../../models/vitals.model.js";
 import mongoose from "mongoose";
-
-// Helper function for IST today bounds (shared across controllers)
-const getISTTodayUTCBounds = () => {
-    const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-
-    // Current time in UTC
-    const nowUTC = new Date();
-
-    // Get today's IST date parts
-    const istNow = new Date(nowUTC.getTime() + IST_OFFSET_MS);
-
-    // IST midnight
-    const istStart = new Date(istNow);
-    istStart.setHours(0, 0, 0, 0);
-
-    // IST tomorrow midnight
-    const istEnd = new Date(istStart);
-    istEnd.setDate(istEnd.getDate() + 1);
-
-    // Convert IST → UTC
-    const startUTC = new Date(istStart.getTime() - IST_OFFSET_MS);
-    const endUTC = new Date(istEnd.getTime() - IST_OFFSET_MS);
-
-    return { start: startUTC, end: endUTC };
-};
 
 
 // get doctor schedule__________________________________________________________

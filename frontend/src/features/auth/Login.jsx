@@ -32,30 +32,52 @@ const Login = () => {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubmit} className="login-form">
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                />
-                {error && <p className="error">{error}</p>}
-                <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
-            </form>
+        <div className="auth-page">
+            <div className="auth-card">
+                <header className="auth-header">
+                    <p className="auth-eyebrow">Welcome back</p>
+                    <h1 className="auth-title">Sign in to TeleMedix</h1>
+                    <p className="auth-subtitle">
+                        New here ? {"  "}
+                        <Link to="/register/patient">Create patient account</Link>
+                        {" · "}
+                        <Link to="/register/doctor">Apply as doctor</Link>
+                    </p>
+                </header>
 
-            <div style={{ marginTop: 12 }}>
-                <Link to="/register/patient">Create patient account</Link>
-                {" · "}
-                <Link to="/register/doctor">Apply as doctor</Link>
+                <form onSubmit={handleSubmit} className="auth-form">
+                    <div className="auth-field">
+                        <label htmlFor="email" className="auth-label">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            className="auth-input"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    <div className="auth-field">
+                        <label htmlFor="password" className="auth-label">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            className="auth-input"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    {error && <p className="auth-error">{error}</p>}
+
+                    <button type="submit" className="auth-primary-btn" disabled={loading}>
+                        {loading ? "Logging in..." : "Sign in"}
+                    </button>
+                </form>
             </div>
         </div>
     );

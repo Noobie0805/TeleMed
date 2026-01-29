@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { FiCalendar, FiVideo, FiPhone, FiMessageCircle } from "react-icons/fi";
 import api from "../../services/api";
+import PageHeader from "../../components/layout/PageHeader";
+import Badge from "../../components/ui/Badge";
+import EmptyState from "../../components/feedback/EmptyState";
+import LoadingSpinner from "../../components/feedback/LoadingSpinner";
+import "./MyAppointments.css";
 
 export default function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -36,63 +42,121 @@ export default function MyAppointments() {
     }
   };
 
-  if (loading) return <div>Loading…</div>;
+  const statusVariant = (status) => {
+    switch (status) {
+      case "scheduled":
+        return "info";
+      case "ongoing":
+        return "success";
+      case "completed":
+        return "secondary";
+      case "cancelled":
+        return "error";
+      default:
+        return "default";
+    }
+  };
+
+  if (loading) {
+    return <LoadingSpinner fullScreen text="Loading your appointments..." />;
+  }
 
   return (
-    <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <h2 style={{ margin: 0 }}>My Appointments</h2>
-        <Link to="/doctors">Book a new one</Link>
-        <button onClick={load} style={{ marginLeft: "auto" }}>
-          Refresh
-        </button>
-      </div>
+    <div className="appointments-page">
+      <PageHeader
+        title="My Appointments"
+        subtitle="Review and manage your upcoming and past consultations."
+        actions={[
+          <button key="refresh" type="button" onClick={load} className="appointments-page__refresh">
+            Refresh
+          </button>,
+          <Link key="book" to="/doctors" className="appointments-page__primary-link">
+            Book new appointment
+          </Link>,
+        ]}
+      />
 
       {error && <p className="error">{error}</p>}
 
       {appointments.length === 0 ? (
-        <p>No appointments yet.</p>
+        <EmptyState
+          icon={<FiCalendar size={48} />}
+          title="No appointments yet"
+          description="Book your first appointment to get started with telemedicine."
+          action={
+            <Link to="/doctors" className="appointments-page__primary-link">
+              Find a doctor
+            </Link>
+          }
+        />
       ) : (
-        <div style={{ marginTop: 12 }}>
+        <div className="appointments-list">
           {appointments.map((a) => {
             const doctorName = a?.doctorId?.profile?.name || "Doctor";
-            const dateStr = a?.slot?.date ? new Date(a.slot.date).toLocaleDateString() : "";
-            const timeStr = `${a?.slot?.startTime || ""} - ${a?.slot?.endTime || ""}`;
+            const specialty = a?.doctorId?.profile?.specialty || "General";
+            const dateStr = a?.slot?.date
+              ? new Date(a.slot.date).toLocaleDateString(undefined, {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "";
+            const timeStr = `${a?.slot?.startTime || ""} – ${a?.slot?.endTime || ""}`;
 
             return (
-              <div
-                key={a._id}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: 8,
-                  padding: 12,
-                  marginBottom: 10,
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                  <div>
-                    <div>
-                      <strong>{doctorName}</strong>
+              <div key={a._id} className="appointment-card">
+                <div className="appointment-card__header">
+                  <div className="appointment-card__status">
+                    <Badge variant={statusVariant(a?.status)}>{a?.status || "unknown"}</Badge>
+                  </div>
+                  <div className="appointment-card__type">
+                    {a?.type === "video" && <><FiVideo size={16} aria-hidden /> </>}
+                    {a?.type === "audio" && <><FiPhone size={16} aria-hidden /> </>}
+                    {a?.type === "chat" && <><FiMessageCircle size={16} aria-hidden /> </>}
+                    {a?.type || "consultation"}
+                  </div>
+                </div>
+
+                <div className="appointment-card__body">
+                  <div className="appointment-card__doctor">
+                    <div className="appointment-card__avatar" aria-hidden="true">
+                      {doctorName.charAt(0)}
                     </div>
-                    <div style={{ fontSize: 12, opacity: 0.8 }}>
-                      {dateStr} · {timeStr} · {a?.type}
+                    <div>
+                      <div className="appointment-card__doctor-name">{doctorName}</div>
+                      <div className="appointment-card__specialty">{specialty}</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div>
-                      <strong>{a?.status}</strong>
+
+                  <div className="appointment-card__meta">
+                    <div className="appointment-card__meta-item">
+                      <span className="appointment-card__meta-label">Date</span>
+                      <span className="appointment-card__meta-value">{dateStr}</span>
                     </div>
-                    {a?.status === "scheduled" && (
-                      <button onClick={() => remove(a._id)} style={{ marginTop: 6 }}>
-                        Delete
-                      </button>
-                    )}
-                    {a?.status === "ongoing" && a?.type === "video" && (
-                      <div style={{ marginTop: 6 }}>
-                        <Link to={`/video/${a._id}`}>Join video</Link>
-                      </div>
-                    )}
+                    <div className="appointment-card__meta-item">
+                      <span className="appointment-card__meta-label">Time</span>
+                      <span className="appointment-card__meta-value">{timeStr}</span>
+                    </div>
                   </div>
+                </div>
+
+                <div className="appointment-card__actions">
+                  {a?.status === "ongoing" && a?.type === "video" && (
+                    <Link to={`/video/${a._id}`} className="appointment-card__btn appointment-card__btn--primary">
+                      Join video call
+                    </Link>
+                  )}
+
+                  {a?.status === "scheduled" && (
+                    <button
+                      type="button"
+                      onClick={() => remove(a._id)}
+                      className="appointment-card__btn appointment-card__btn--danger"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </div>
             );

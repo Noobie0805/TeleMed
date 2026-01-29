@@ -1,86 +1,154 @@
 import React, { useState } from "react";
 import api from "../../services/api";
+import "./Chat.css";
+import { BsRobot, BsHourglass } from "react-icons/bs";
+import { RiUserHeartLine } from "react-icons/ri";
+import { BiSend, BiSolidError } from "react-icons/bi";
 
 export default function Chat() {
   const [context, setContext] = useState("platform"); // platform | medical
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]); // { role, text }
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  // Platform mode states
+  const [platformMessage, setPlatformMessage] = useState("");
+  const [platformMessages, setPlatformMessages] = useState([]);
+  const [platformLoading, setPlatformLoading] = useState(false);
+  const [platformError, setPlatformError] = useState("");
+
+  // Medical mode states
+  const [medicalMessage, setMedicalMessage] = useState("");
+  const [medicalMessages, setMedicalMessages] = useState([]);
+  const [medicalLoading, setMedicalLoading] = useState(false);
+  const [medicalError, setMedicalError] = useState("");
+
+  // Get current mode states
+  const getState = () => {
+    if (context === "platform") {
+      return {
+        message: platformMessage,
+        setMessage: setPlatformMessage,
+        messages: platformMessages,
+        setMessages: setPlatformMessages,
+        loading: platformLoading,
+        setLoading: setPlatformLoading,
+        error: platformError,
+        setError: setPlatformError,
+      };
+    } else {
+      return {
+        message: medicalMessage,
+        setMessage: setMedicalMessage,
+        messages: medicalMessages,
+        setMessages: setMedicalMessages,
+        loading: medicalLoading,
+        setLoading: setMedicalLoading,
+        error: medicalError,
+        setError: setMedicalError,
+      };
+    }
+  };
+
+  const state = getState();
 
   const send = async (e) => {
     e.preventDefault();
-    const trimmed = message.trim();
+    const trimmed = state.message.trim();
     if (!trimmed) return;
 
-    setError("");
-    setLoading(true);
-    setMessages((m) => [...m, { role: "user", text: trimmed }]);
-    setMessage("");
+    state.setError("");
+    state.setLoading(true);
+    state.setMessages((m) => [...m, { role: "user", text: trimmed }]);
+    state.setMessage("");
 
     try {
       const { data } = await api.post("/ai/chat", { message: trimmed, context });
       const payload = data?.data || {};
       const reply = payload?.response || "No response";
-      setMessages((m) => [
+      state.setMessages((m) => [
         ...m,
         { role: "assistant", text: reply },
         ...(payload?.disclaimer ? [{ role: "system", text: payload.disclaimer }] : []),
       ]);
     } catch (err) {
-      setError(err?.response?.data?.message || "Chat failed");
+      state.setError(err?.response?.data?.message || "Chat failed");
     } finally {
-      setLoading(false);
+      state.setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 800 }}>
-      <h2>Chat</h2>
-
-      <div style={{ marginBottom: 12 }}>
-        <label>
-          Mode:{" "}
-          <select value={context} onChange={(e) => setContext(e.target.value)}>
+    <div className={`chat-component chat-component--${context}`}>
+      <div className="chat-header">
+        <h2 className="chat-title">AI Assistant</h2>
+        <label className="chat-mode-label">
+          <span>Mode:</span>
+          <select value={context} onChange={(e) => setContext(e.target.value)} className="chat-mode-select">
             <option value="platform">Platform</option>
             <option value="medical">Medical (general info)</option>
           </select>
         </label>
       </div>
 
-      <div
-        style={{
-          border: "1px solid #eee",
-          borderRadius: 8,
-          padding: 12,
-          minHeight: 200,
-          marginBottom: 12,
-        }}
-      >
-        {messages.length === 0 ? (
-          <div style={{ opacity: 0.7 }}>Ask something to get started.</div>
+      <div className="chat-messages-container">
+        {state.messages.length === 0 ? (
+          <div className="chat-empty">
+            <p>Ask something to get started</p>
+          </div>
         ) : (
-          messages.map((m, idx) => (
-            <div key={idx} style={{ marginBottom: 8 }}>
-              <strong style={{ textTransform: "capitalize" }}>{m.role}:</strong>{" "}
-              <span>{m.text}</span>
+          state.messages.map((m, idx) => (
+            <div key={idx} className={`chat-message-wrapper chat-message-wrapper--${m.role}`}>
+              <div className={`chat-message chat-message--${m.role}`}>
+                {m.role === "assistant" && (
+                  <span className="chat-message-avatar"><BsRobot className="chat-message-avatar-icon" /></span>
+                )}
+                <div className="chat-message-content">
+                  <span className="chat-message-text">{m.text}</span>
+                  {m.role === "system" && (
+                    <span className="chat-message-disclaimer"><BiSolidError className="chat-message-avatar-icon" /> Disclaimer</span>
+                  )}
+                </div>
+                {m.role === "user" && (
+                  <span className="chat-message-avatar"><RiUserHeartLine className="chat-message-avatar-icon" /></span>
+                )}
+              </div>
             </div>
           ))
         )}
+        {state.loading && (
+          <div className="chat-message-wrapper chat-message-wrapper--assistant">
+            <div className="chat-message chat-message--assistant">
+              <span className="chat-message-avatar"><BsRobot className="chat-message-avatar-icon" /></span>
+              <div className="chat-message-content">
+                <div className="chat-typing-indicator">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {error && <p className="error">{error}</p>}
+      {state.error && (
+        <div className="chat-error">
+          <span className="chat-error-icon"><BiSolidError className="chat-message-avatar-icon" /></span>
+          <span>{state.error}</span>
+        </div>
+      )}
 
-      <form onSubmit={send} style={{ display: "flex", gap: 8 }}>
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message…"
-          style={{ flex: 1 }}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "Sending..." : "Send"}
-        </button>
+      <form onSubmit={send} className="chat-form">
+        <div className="chat-input-wrapper">
+          <input
+            value={state.message}
+            onChange={(e) => state.setMessage(e.target.value)}
+            placeholder="Type your message…"
+            className="chat-input"
+            disabled={state.loading}
+          />
+          <button type="submit" disabled={state.loading} className="chat-send-btn">
+            {state.loading ? <BsHourglass className="chat-send-icon" /> : <BiSend className="chat-send-icon" />}
+          </button>
+        </div>
       </form>
     </div>
   );

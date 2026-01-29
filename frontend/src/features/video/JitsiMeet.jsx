@@ -1,7 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { FiAlertTriangle, FiCheckCircle } from "react-icons/fi";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
+import PageHeader from "../../components/layout/PageHeader";
+import LoadingSpinner from "../../components/feedback/LoadingSpinner";
+import EmptyState from "../../components/feedback/EmptyState";
+import "./JitsiMeet.css";
 
 export default function JitsiMeet() {
   const { appointmentId } = useParams();
@@ -69,49 +74,80 @@ export default function JitsiMeet() {
     }
   };
 
-  if (loading) return <div>Loading video session…</div>;
+  if (loading) {
+    return <LoadingSpinner fullScreen text="Preparing your video session..." />;
+  }
+
+  if (error && !roomName) {
+    return (
+      <div className="video-page">
+        <PageHeader title="Video consultation" subtitle="We couldn't start your session." />
+        <EmptyState
+          icon={<FiAlertTriangle size={48} />}
+          title="Unable to start session"
+          description={error}
+        />
+        {role === "patient" && (
+          <p className="video-hint">
+            If your doctor hasn't started the session yet, please wait until the appointment is
+            marked ongoing and try again from your appointments page.
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h2>Video session</h2>
+    <div className="video-page">
+      <PageHeader
+        title="Video consultation"
+        subtitle={role === "doctor" ? "You are hosting this consultation." : "You are joining this consultation."}
+      />
 
-      {error && (
-        <div>
-          <p className="error">{error}</p>
-          {role === "patient" && (
-            <p style={{ fontSize: 12, opacity: 0.8 }}>
-              If your doctor hasn’t started the session yet, please wait until the appointment is marked ongoing.
-            </p>
-          )}
-        </div>
+      {error && !ended && (
+        <p className="error">{error}</p>
       )}
 
-      {ended && <p>Session ended.</p>}
-
-      {roomName && (
-        <div style={{ marginBottom: 12 }}>
-          <div>
-            <strong>Room:</strong> {roomName}
-          </div>
-          <div>
-            <strong>Passcode:</strong> {passCode || "—"}
-          </div>
-        </div>
-      )}
-
-      {iframeSrc && !ended && (
-        <iframe
-          title="Jitsi Meet"
-          src={iframeSrc}
-          style={{ width: "100%", height: "70vh", border: 0, borderRadius: 8 }}
-          allow="camera; microphone; fullscreen; display-capture"
+      {ended ? (
+        <EmptyState
+          icon={<FiCheckCircle size={48} />}
+          title="Session ended"
+          description="This video consultation has finished. You can close this window or return to your appointments."
         />
-      )}
+      ) : (
+        <>
+          {roomName && (
+            <div className="video-info-card">
+              <div className="video-info-row">
+                <span className="video-info-label">Room</span>
+                <span className="video-info-value">{roomName}</span>
+              </div>
+              <div className="video-info-row">
+                <span className="video-info-label">Passcode</span>
+                <span className="video-info-value">{passCode || "—"}</span>
+              </div>
+            </div>
+          )}
 
-      {role === "doctor" && roomName && !ended && (
-        <div style={{ marginTop: 12 }}>
-          <button onClick={endSession}>End session</button>
-        </div>
+          {iframeSrc && (
+            <div className="video-frame-wrapper">
+              <iframe
+                title="Jitsi Meet"
+                src={iframeSrc}
+                className="video-frame"
+                allow="camera; microphone; fullscreen; display-capture"
+              />
+            </div>
+          )}
+
+          {role === "doctor" && roomName && (
+            <div className="video-actions">
+              <button type="button" onClick={endSession} className="video-end-btn">
+                End session for everyone
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

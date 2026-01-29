@@ -3,7 +3,6 @@ import Login from "./features/auth/Login";
 import Register from "./features/auth/Register";
 import DoctorPending from "./features/auth/DoctorPending";
 import SymptomChecker from "./features/symptoms/SymptomChecker";
-import Chat from "./features/ai/Chat";
 import DoctorList from "./features/appointments/DoctorList";
 import AppointmentForm from "./features/appointments/AppointmentForm";
 import MyAppointments from "./features/appointments/MyAppointments";
@@ -13,15 +12,12 @@ import VitalsDashboard from "./features/vitals/VitalsDashboard";
 import PendingDoctors from "./features/admin/PendingDoctors";
 import AdminOverview from "./features/admin/AdminOverview";
 import Layout from "./components/common/Layout";
+import AuthLayout from "./components/common/AuthLayout";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import RoleRoute from "./components/common/RoleRoute";
 import NotFound from "./components/common/NotFound";
 import { useAuth } from "./context/AuthContext";
-
-function HomeRedirect() {
-  const { isAuthenticated, defaultRedirect } = useAuth();
-  return <Navigate to={isAuthenticated ? defaultRedirect : "/login"} replace />;
-}
+import LandingPage from "./features/marketing/LandingPage";
 
 function App() {
   const { isAuthenticated, defaultRedirect } = useAuth();
@@ -29,22 +25,53 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomeRedirect />} />
+        {/* Public marketing landing page */}
+        <Route path="/" element={<LandingPage />} />
 
-        <Route
-          path="/login"
-          element={!isAuthenticated ? <Login /> : <Navigate to={defaultRedirect} replace />}
+        <Route path="/login"
+          element={
+            !isAuthenticated ? (
+              <AuthLayout>
+                <Login />
+              </AuthLayout>
+            ) : (
+              <Navigate to={defaultRedirect} replace />
+            )
+          }
         />
 
         <Route
           path="/register/patient"
-          element={!isAuthenticated ? <Register type="patient" /> : <Navigate to={defaultRedirect} replace />}
+          element={
+            !isAuthenticated ? (
+              <AuthLayout>
+                <Register type="patient" />
+              </AuthLayout>
+            ) : (
+              <Navigate to={defaultRedirect} replace />
+            )
+          }
         />
         <Route
           path="/register/doctor"
-          element={!isAuthenticated ? <Register type="doctor" /> : <Navigate to={defaultRedirect} replace />}
+          element={
+            !isAuthenticated ? (
+              <AuthLayout>
+                <Register type="doctor" />
+              </AuthLayout>
+            ) : (
+              <Navigate to={defaultRedirect} replace />
+            )
+          }
         />
-        <Route path="/pending" element={<DoctorPending />} />
+        <Route
+          path="/pending"
+          element={
+            <AuthLayout>
+              <DoctorPending />
+            </AuthLayout>
+          }
+        />
 
         <Route
           element={
@@ -60,7 +87,6 @@ function App() {
           <Route path="/appointments" element={<RoleRoute allow={["patient"]}><MyAppointments /></RoleRoute>} />
           <Route path="/appointments/book" element={<RoleRoute allow={["patient"]}><AppointmentForm /></RoleRoute>} />
           <Route path="/doctor/schedule" element={<RoleRoute allow={["doctor"]}><DoctorSchedule /></RoleRoute>} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/vitals" element={<RoleRoute allow={["patient"]}><VitalsDashboard /></RoleRoute>} />
 
           <Route path="/video/:appointmentId" element={<RoleRoute allow={["patient","doctor"]}><JitsiMeet /></RoleRoute>} />
@@ -69,7 +95,14 @@ function App() {
           <Route path="/admin/overview" element={<RoleRoute allow={["admin"]}><AdminOverview /></RoleRoute>} />
         </Route>
 
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            <AuthLayout>
+              <NotFound />
+            </AuthLayout>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -1,6 +1,7 @@
 import { AsyncHandler } from "../../utils/asyncHandler.js";
 import { ApiError } from "../../utils/apiError.js";
 import { ApiResponse } from "../../utils/apiResponse.js";
+import { getISTDateTimeUTC } from "../../utils/timezone.js";
 import Appointment from "../../models/appointments.model.js";
 import crypto from "crypto";
 
@@ -30,14 +31,14 @@ const startSession = AsyncHandler(async (req, res) => {
         );
     }
 
-    //  Time calculations
+    //  Time calculations - convert IST date + time to UTC
     const WINDOW_MS = 10 * 60 * 1000; // 10 min
     const now = Date.now();
 
-    const [hours, minutes] = appointment.slot.startTime.split(":").map(Number);
-    const scheduledTime = new Date(appointment.slot.date);
-    scheduledTime.setHours(hours, minutes, 0, 0);
-
+    // appointment.slot.date is stored as IST midnight UTC
+    // appointment.slot.startTime is in IST (HH:mm format)
+    // Convert to UTC for proper time comparison
+    const scheduledTime = getISTDateTimeUTC(appointment.slot.date, appointment.slot.startTime);
     const scheduledTimeMs = scheduledTime.getTime();
 
     // Doctor allowed ±10 minutes from scheduled start

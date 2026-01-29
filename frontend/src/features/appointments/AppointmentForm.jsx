@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../services/api";
+import PageHeader from "../../components/layout/PageHeader";
+import "./AppointmentForm.css";
 
 export default function AppointmentForm() {
   const [searchParams] = useSearchParams();
@@ -79,65 +81,96 @@ export default function AppointmentForm() {
   };
 
   return (
-    <div style={{ maxWidth: 700 }}>
-      <h2>Book Appointment</h2>
+    <div className="appointment-form-page">
+      <PageHeader
+        title="Book appointment"
+        subtitle="Choose a doctor, date, time, and consultation type."
+      />
 
-      <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
-        <label>
-          Doctor
-          <select value={doctorId} onChange={(e) => setDoctorId(e.target.value)} required>
-            <option value="">Select a doctor</option>
-            {doctors.map((d) => (
-              <option key={d._id} value={d._id}>
-                {d.profile?.name} {d.profile?.specialty ? `- ${d.profile.specialty}` : ""}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {selectedDoctor && (
-          <div style={{ fontSize: 12, opacity: 0.8 }}>
-            Booking with <strong>{selectedDoctor.profile?.name}</strong>
+      <div className="appointment-form-card">
+        <form onSubmit={submit} className="appointment-form">
+          <div className="appointment-form__row">
+            <label className="appointment-form__field">
+              <span className="appointment-form__label">Doctor</span>
+              <select
+                value={doctorId}
+                onChange={(e) => setDoctorId(e.target.value)}
+                required
+              >
+                <option value="">Select a doctor</option>
+                {doctors.map((d) => (
+                  <option key={d._id} value={d._id}>
+                    {d.profile?.name}{" "}
+                    {d.profile?.specialty ? `- ${d.profile.specialty}` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
-        )}
 
-        <label>
-          Date
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-        </label>
+          {selectedDoctor && (
+            <div className="appointment-form__hint">
+              Booking with <strong>{selectedDoctor.profile?.name}</strong>
+            </div>
+          )}
 
-        <div style={{ display: "flex", gap: 12 }}>
-          <label style={{ flex: 1 }}>
-            Start time
-            <input
-              type="time"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              required
-            />
-          </label>
-          <label style={{ flex: 1 }}>
-            End time
-            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
-          </label>
-        </div>
+          <div className="appointment-form__row">
+            <label className="appointment-form__field">
+              <span className="appointment-form__label">Date</span>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </label>
+          </div>
 
-        <label>
-          Type
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-            <option value="chat">Chat</option>
-          </select>
-        </label>
+          <div className="appointment-form__row appointment-form__row--inline">
+            <label className="appointment-form__field">
+              <span className="appointment-form__label">Start time</span>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                required
+              />
+            </label>
+            <label className="appointment-form__field">
+              <span className="appointment-form__label">End time</span>
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                required
+              />
+            </label>
+          </div>
 
-        {error && <p className="error">{error}</p>}
-        {success && <p className="success">{success}</p>}
+          <div className="appointment-form__row">
+            <label className="appointment-form__field">
+              <span className="appointment-form__label">Type</span>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="video">Video</option>
+                <option value="audio">Audio</option>
+                <option value="chat">Chat</option>
+              </select>
+            </label>
+          </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Booking..." : "Book"}
-        </button>
-      </form>
+          {error && <p className="error">{error}</p>}
+          {success && <p className="success">{success}</p>}
+
+          <div className="appointment-form__actions">
+            <button type="submit" disabled={loading}>
+              {loading ? "Booking..." : "Book appointment"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

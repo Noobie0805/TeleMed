@@ -1,6 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { FiHeart, FiTrendingUp } from "react-icons/fi";
 import api from "../../services/api";
 import VitalChart from "../../components/charts/VitalChart";
+import PageHeader from "../../components/layout/PageHeader";
+import LoadingSpinner from "../../components/feedback/LoadingSpinner";
+import EmptyState from "../../components/feedback/EmptyState";
+import "./VitalsDashboard.css";
 
 const VITAL_TYPES = [
   "blood-pressure",
@@ -100,115 +105,194 @@ export default function VitalsDashboard() {
   };
 
   return (
-    <div style={{ maxWidth: 900 }}>
-      <h2>Vitals</h2>
+    <div className="vitals-page">
+      <PageHeader
+        title="Health vitals"
+        subtitle="Log your health measurements and track trends over time."
+      />
 
-      <form onSubmit={submit} style={{ display: "grid", gap: 10, marginBottom: 16 }}>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-          <label>
-            Type
-            <select value={logType} onChange={(e) => setLogType(e.target.value)}>
-              {VITAL_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
+      <div className="vitals-layout">
+        <section className="vitals-log">
+          <h3 className="vitals-section-title">Quick log</h3>
 
-          {logType === "blood-pressure" ? (
-            <>
-              <label>
-                Systolic
-                <input value={bpSys} onChange={(e) => setBpSys(e.target.value)} placeholder="120" />
+          <form onSubmit={submit} className="vitals-log-form">
+            <div className="vitals-log-row">
+              <label className="vitals-field">
+                <span className="vitals-label">Type</span>
+                <select
+                  value={logType}
+                  onChange={(e) => setLogType(e.target.value)}
+                >
+                  {VITAL_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
               </label>
-              <label>
-                Diastolic
-                <input value={bpDia} onChange={(e) => setBpDia(e.target.value)} placeholder="80" />
+
+              {logType === "blood-pressure" ? (
+                <>
+                  <label className="vitals-field">
+                    <span className="vitals-label">Systolic</span>
+                    <input
+                      value={bpSys}
+                      onChange={(e) => setBpSys(e.target.value)}
+                      placeholder="120"
+                    />
+                  </label>
+                  <label className="vitals-field">
+                    <span className="vitals-label">Diastolic</span>
+                    <input
+                      value={bpDia}
+                      onChange={(e) => setBpDia(e.target.value)}
+                      placeholder="80"
+                    />
+                  </label>
+                </>
+              ) : (
+                <label className="vitals-field">
+                  <span className="vitals-label">Value</span>
+                  <input
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="e.g., 72"
+                  />
+                </label>
+              )}
+            </div>
+
+            <div className="vitals-log-row">
+              <label className="vitals-field">
+                <span className="vitals-label">Unit</span>
+                <input
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                  placeholder="bpm / steps / %"
+                />
               </label>
-            </>
-          ) : (
-            <label>
-              Value
-              <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g., 72" />
-            </label>
+
+              <label className="vitals-field">
+                <span className="vitals-label">Source</span>
+                <select
+                  value={source}
+                  onChange={(e) => setSource(e.target.value)}
+                >
+                  <option value="manual">manual</option>
+                  <option value="device">device</option>
+                  <option value="wearable">wearable</option>
+                  <option value="app">app</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="vitals-log-row">
+              <label className="vitals-field">
+                <span className="vitals-label">Notes</span>
+                <input
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="optional"
+                />
+              </label>
+            </div>
+
+            {error && <p className="error">{error}</p>}
+            {success && <p className="success">{success}</p>}
+
+            <div className="vitals-log-actions">
+              <button type="submit" disabled={loading}>
+                {loading ? "Saving..." : "Log vital"}
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section className="vitals-summary">
+          <h3 className="vitals-section-title">Weekly health score</h3>
+          {loading && !weekly && (
+            <LoadingSpinner size="sm" text="Loading weekly score..." />
           )}
 
-          <label>
-            Unit
-            <input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="bpm / steps / %" />
-          </label>
-
-          <label>
-            Source
-            <select value={source} onChange={(e) => setSource(e.target.value)}>
-              <option value="manual">manual</option>
-              <option value="device">device</option>
-              <option value="wearable">wearable</option>
-              <option value="app">app</option>
-            </select>
-          </label>
-        </div>
-
-        <label>
-          Notes
-          <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="optional" />
-        </label>
-
-        {error && <p className="error">{error}</p>}
-        {success && <p className="success">{success}</p>}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Log vital"}
-        </button>
-      </form>
-
-      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <h3 style={{ margin: 0 }}>Charts</h3>
-        <label>
-          Type
-          <select value={chartType} onChange={(e) => setChartType(e.target.value)}>
-            {VITAL_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Days
-          <input
-            type="number"
-            min="1"
-            max="90"
-            value={days}
-            onChange={(e) => setDays(Number(e.target.value))}
-            style={{ width: 90 }}
-          />
-        </label>
-        <button onClick={refresh} disabled={loading}>
-          Refresh
-        </button>
+          {weekly ? (
+            <div className="vitals-score-card">
+              <div className="vitals-score-value">{weekly.score}/100</div>
+              {Array.isArray(weekly.insights) && weekly.insights.length > 0 && (
+                <ul className="vitals-score-insights">
+                  {weekly.insights.map((i, idx) => (
+                    <li key={idx}>{i}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            !loading && (
+              <EmptyState
+                icon={<FiHeart size={48} />}
+                title="No weekly score yet"
+                description="Log a few vitals to see your weekly health score."
+              />
+            )
+          )}
+        </section>
       </div>
 
-      {weekly && (
-        <div style={{ marginTop: 12, marginBottom: 12 }}>
-          <strong>Weekly score:</strong> {weekly.score}/100
-          {Array.isArray(weekly.insights) && weekly.insights.length > 0 && (
-            <ul>
-              {weekly.insights.map((i, idx) => (
-                <li key={idx}>{i}</li>
-              ))}
-            </ul>
-          )}
+      <section className="vitals-charts">
+        <div className="vitals-charts-header">
+          <h3 className="vitals-section-title">Charts</h3>
+          <div className="vitals-charts-controls">
+            <label className="vitals-field">
+              <span className="vitals-label">Type</span>
+              <select
+                value={chartType}
+                onChange={(e) => setChartType(e.target.value)}
+              >
+                {VITAL_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="vitals-field">
+              <span className="vitals-label">Days</span>
+              <input
+                type="number"
+                min="1"
+                max="90"
+                value={days}
+                onChange={(e) => setDays(Number(e.target.value))}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={refresh}
+              disabled={loading}
+              className="vitals-refresh"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
-      )}
 
-      {chartData ? (
-        <VitalChart chartData={chartData} />
-      ) : (
-        <p style={{ marginTop: 12, opacity: 0.7 }}>No chart data.</p>
-      )}
+        {loading && !chartData && (
+          <LoadingSpinner text="Loading vitals chart..." />
+        )}
+
+        {chartData ? (
+          <div className="vitals-chart-wrapper">
+            <VitalChart chartData={chartData} />
+          </div>
+        ) : (
+          !loading && (
+            <EmptyState
+              icon={<FiTrendingUp size={48} />}
+              title="No chart data"
+              description="Log some vitals or adjust the time range to see trends."
+            />
+          )
+        )}
+      </section>
     </div>
   );
 }
