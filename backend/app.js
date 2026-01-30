@@ -17,11 +17,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(",")
-  : [];
+const allowedOrigins = ["https://tele-med-eight.vercel.app", "http://localhost:3000"];  
+app.use(cors({ origin: (origin, callback) => {
+  if (!origin) return callback(null, true);
 
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+
+  return callback(new Error(`CORS blocked: ${origin}`));
+}, credentials: true }));
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/appointments", appointmentRoutes);
