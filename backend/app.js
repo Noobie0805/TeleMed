@@ -12,11 +12,11 @@ import "./src/utils/cleanupCron.js";
 
 const app = express();
 
-/* -------------------- BASIC MIDDLEWARE -------------------- */
+
 app.use(express.json());
 app.use(cookieParser());
 
-/* -------------------- CORS -------------------- */
+
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",")
   : [];
@@ -31,16 +31,12 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(null, false); // ❗ DO NOT throw error
+      return callback(null, false); 
     },
     credentials: true,
   })
 );
 
-// ✅ Preflight support (VERY IMPORTANT)
-app.options("*", cors());
-
-/* -------------------- ROUTES -------------------- */
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/appointments", appointmentRoutes);
 app.use("/api/v1/admin", adminRoutes);
@@ -48,7 +44,7 @@ app.use("/api/v1/vitals", vitalRoutes);
 app.use("/api/v1/video", videoSessionRoutes);
 app.use("/api/v1/ai", AIServiceRoutes);
 
-/* -------------------- 404 HANDLER -------------------- */
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -56,7 +52,7 @@ app.use((req, res) => {
   });
 });
 
-/* -------------------- ERROR HANDLER (LAST) -------------------- */
+
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
 
