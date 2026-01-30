@@ -1,7 +1,7 @@
 import axios from "axios";
 import { session } from "./session";
 
-const getBaseUrl = () => process.env.REACT_APP_API_URL;
+const getBaseUrl = () => process.env.REACT_APP_API_URL + "/api/v1";
 
 export async function refreshTokens() {
   const baseURL = getBaseUrl();
