@@ -21,16 +21,19 @@ const getDoctorReferrals = AsyncHandler(async (req, res) => {
         throw new ApiError(400, "At least one valid specialty must be provided");
     }
 
-    // Phase 4.2: Doctor matching logic
+    // Phase 4.2: Doctor matching logic (User has verificationStatus, profile.specialty)
     const doctors = await User.find({
         role: 'doctor',
-        'doctor.verified': true,
-        'doctor.specialties': { $in: specialtyList },
+        verificationStatus: 'verified',
+        $or: [
+            { 'profile.specialty': { $in: specialtyList } },
+            { 'profile.specialty': { $regex: specialtyList.join('|'), $options: 'i' } }
+        ],
         ...(location && { 'profile.city': location })
     })
-        .select('profile.name avatar doctor.specialties availability rating')
-        .sort({ rating: -1, availability: 1 })
-        .limit(3)
+        .select('profile.name profile.specialty avatar rating')
+        .sort({ rating: -1 })
+        .limit(5)
         .lean();
 
     // Determine next steps based on urgency

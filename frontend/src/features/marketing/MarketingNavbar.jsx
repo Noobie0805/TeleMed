@@ -27,7 +27,7 @@ function MarketingNavbar() {
           <>
             <li>
               <NavLink to="/symptoms" className={({ isActive }) => (isActive ? "active" : "")}>
-                Symptom checker
+                Assistant
               </NavLink>
             </li>
             <li>
@@ -40,32 +40,35 @@ function MarketingNavbar() {
                 Appointments
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/vitals" className={({ isActive }) => (isActive ? "active" : "")}>
+                Vitals
+              </NavLink>
+            </li>
           </>
         )}
-        {!isAuthenticated && (
+        {isAuthenticated && role === "doctor" && (
           <>
             <li>
-              <NavLink to="/symptoms" className={({ isActive }) => (isActive ? "active" : "")}>
-                Symptom checker
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/doctors" className={({ isActive }) => (isActive ? "active" : "")}>
-                Doctors
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/appointments" className={({ isActive }) => (isActive ? "active" : "")}>
-                Appointments
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/about" className={({ isActive }) => (isActive ? "active" : "")}>
-                About
+              <NavLink to='/doctor/schedule' className={({ isActive }) => (isActive ? "active" : "")}>
+                Schedule
               </NavLink>
             </li>
           </>
         )}
+        {isAuthenticated && role === "admin" && (
+          <>
+            <li>
+              <NavLink to="/admin/pending-doctors" className={({ isActive }) => (isActive ? "active" : "")}>
+                Pending Doctors
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/overview" className={({ isActive }) => (isActive ? "active" : "")}>
+                Overview
+              </NavLink>
+            </li>
+          </>)}
         {isAuthenticated ? (
           <li className="navbar-user">
             <span className="navbar-user-info">

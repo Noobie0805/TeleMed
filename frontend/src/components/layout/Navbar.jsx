@@ -36,8 +36,13 @@ export default function Navbar() {
             {role === "patient" && (
               <>
                 <li>
+                  <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+                    Home
+                  </NavLink>
+                </li>
+                <li>
                   <NavLink to="/symptoms" className={({ isActive }) => (isActive ? "active" : "")}>
-                    Symptoms
+                    Assistant
                   </NavLink>
                 </li>
                 <li>
@@ -61,6 +66,11 @@ export default function Navbar() {
             {role === "doctor" && (
               <>
                 <li>
+                  <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+                    Home
+                  </NavLink>
+                </li>
+                <li>
                   <NavLink to="/doctor/schedule" className={({ isActive }) => (isActive ? "active" : "")}>
                     Schedule
                   </NavLink>
@@ -70,6 +80,11 @@ export default function Navbar() {
 
             {role === "admin" && (
               <>
+                <li>
+                  <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+                    Home
+                  </NavLink>
+                </li>
                 <li>
                   <NavLink to="/admin/pending-doctors" className={({ isActive }) => (isActive ? "active" : "")}>
                     Pending Doctors

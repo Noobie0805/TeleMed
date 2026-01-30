@@ -53,8 +53,10 @@ const DoctorList = () => {
             value={specialty}
           >
             <option value="">All specialties</option>
-            <option value="neurology">Neurology</option>
-            <option value="cardiology">Cardiology</option>
+            <option value="General">General</option>
+            <option value="Neurology">Neurology</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Orthology">Orthology</option>
           </select>
         </label>
       </div>

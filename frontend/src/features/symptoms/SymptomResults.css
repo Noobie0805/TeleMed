@@ -381,3 +381,72 @@
     justify-content: center;
   }
 }
+
+/* Book from referral panel */
+.results-book-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(82, 183, 136, 0.3);
+  color: #e2e8f0;
+}
+
+.results-book-panel__title {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.results-book-panel__empty {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.results-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.results-book-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.results-book-form__label span {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.results-book-form__input,
+.results-book-form__select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(15, 23, 42, 0.6);
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.results-book-form__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.results-book-success {
+  padding: 12px 0;
+}
+
+.results-book-success p {
+  margin: 0 0 12px 0;
+  color: #52b788;
+}

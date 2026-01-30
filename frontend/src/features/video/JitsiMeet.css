@@ -71,3 +71,76 @@
   font-size: 13px;
   color: #6b7280;
 }
+
+.video-consult-form-wrapper {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  max-width: 480px;
+}
+
+.video-consult-form-title {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #374151;
+}
+
+.video-consult-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.video-consult-form__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.video-consult-form__label span {
+  font-weight: 500;
+  color: #374151;
+}
+
+.video-consult-form__input {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.video-consult-form__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.video-consult-form__btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+}
+
+.video-consult-form__btn--primary {
+  background: #52b788;
+  color: #fff;
+}
+
+.video-consult-form__btn--secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.video-consult-form__btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

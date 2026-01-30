@@ -14,9 +14,8 @@ export const registerDoctor = AsyncHandler(async (req, res) => {
         throw new ApiError(400, 'Email already registered');
     }
 
-    const normalizedQualifications =
-        Array.isArray(qualifications) ? qualifications :
-            (qualifications ? [qualifications] : []);
+    const normalizedQualifications = Array.isArray(qualifications) ? qualifications : (qualifications ? [qualifications] : []);
+    const normalizedSpecialty = specialty ? specialty.trim() : 'General';
 
     const doctor = await User.create({
         email,
@@ -25,7 +24,7 @@ export const registerDoctor = AsyncHandler(async (req, res) => {
         profile: {
             name,
             phone,
-            specialty,
+            specialty: normalizedSpecialty,
             experience: Number.isFinite(Number(experience)) ? Number(experience) : 0,
             qualifications: normalizedQualifications,
             licenseNumber

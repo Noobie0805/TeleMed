@@ -6,6 +6,7 @@ import PageHeader from "../../components/layout/PageHeader";
 import LoadingSpinner from "../../components/feedback/LoadingSpinner";
 import Chat from "../ai/Chat";
 import { BiSolidError } from "react-icons/bi";
+import { FaXmark } from "react-icons/fa6";
 
 
 const SymptomChecker = () => {
@@ -18,8 +19,13 @@ const SymptomChecker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const addSymptom = () =>
+  const addSymptom = () => {
     setSymptoms([...symptoms, { name: "", severity: 1 }]);
+  }
+
+  const removeSymptom = (index) => {
+    setSymptoms(symptoms.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,6 +64,7 @@ const SymptomChecker = () => {
         </div>
       </section>
 
+      <h3 className="symptom-section-title">Check your Symptoms </h3>
       <div className="symptom-layout">
         <section className="symptom-form-card">
           <h3 className="symptom-section-title">Tell us your symptoms</h3>
@@ -146,6 +153,7 @@ const SymptomChecker = () => {
                     </span>
                   </div>
                 </label>
+                <FaXmark className="symptom-remove-btn" onClick={() => removeSymptom(i)} />
               </div>
             ))}
 

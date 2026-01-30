@@ -17,6 +17,15 @@ export default function JitsiMeet() {
   const [roomName, setRoomName] = useState("");
   const [passCode, setPassCode] = useState("");
   const [ended, setEnded] = useState(false);
+  const [showConsultForm, setShowConsultForm] = useState(false);
+  const [consultSubmitting, setConsultSubmitting] = useState(false);
+  const [consultSubmitted, setConsultSubmitted] = useState(false);
+  const [consultForm, setConsultForm] = useState({
+    notes: "",
+    prescription: "",
+    diagnosis: "",
+    followUpInstructions: "",
+  });
 
   const jitsiHost = process.env.REACT_APP_JITSI || "meet.jit.si";
 
@@ -69,8 +78,24 @@ export default function JitsiMeet() {
     try {
       await api.post(`/video/end/${appointmentId}`);
       setEnded(true);
+      if (role === "doctor") setShowConsultForm(true);
     } catch (err) {
       setError(err?.response?.data?.message || "Failed to end session");
+    }
+  };
+
+  const submitConsultNotes = async (e) => {
+    e.preventDefault();
+    setError("");
+    setConsultSubmitting(true);
+    try {
+      await api.patch(`/appointments/${appointmentId}/notes`, consultForm);
+      setConsultSubmitted(true);
+      setShowConsultForm(false);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to submit notes");
+    } finally {
+      setConsultSubmitting(false);
     }
   };
 
@@ -109,11 +134,82 @@ export default function JitsiMeet() {
       )}
 
       {ended ? (
-        <EmptyState
-          icon={<FiCheckCircle size={48} />}
-          title="Session ended"
-          description="This video consultation has finished. You can close this window or return to your appointments."
-        />
+        <>
+          <EmptyState
+            icon={<FiCheckCircle size={48} />}
+            title="Session ended"
+            description={
+              consultSubmitted
+                ? "Consultation notes submitted. You can close this window or return to your appointments."
+                : "This video consultation has finished. You can close this window or return to your appointments."
+            }
+          />
+          {role === "doctor" && showConsultForm && !consultSubmitted && (
+            <div className="video-consult-form-wrapper">
+              <h3 className="video-consult-form-title">Submit consultation notes</h3>
+              <form onSubmit={submitConsultNotes} className="video-consult-form">
+                <label className="video-consult-form__label">
+                  <span>Notes</span>
+                  <textarea
+                    value={consultForm.notes}
+                    onChange={(e) => setConsultForm((p) => ({ ...p, notes: e.target.value }))}
+                    rows={2}
+                    placeholder="Consultation notes"
+                    className="video-consult-form__input"
+                  />
+                </label>
+                <label className="video-consult-form__label">
+                  <span>Diagnosis</span>
+                  <input
+                    type="text"
+                    value={consultForm.diagnosis}
+                    onChange={(e) => setConsultForm((p) => ({ ...p, diagnosis: e.target.value }))}
+                    placeholder="Diagnosis"
+                    className="video-consult-form__input"
+                  />
+                </label>
+                <label className="video-consult-form__label">
+                  <span>Prescription</span>
+                  <textarea
+                    value={consultForm.prescription}
+                    onChange={(e) => setConsultForm((p) => ({ ...p, prescription: e.target.value }))}
+                    rows={2}
+                    placeholder="Prescription details"
+                    className="video-consult-form__input"
+                  />
+                </label>
+                <label className="video-consult-form__label">
+                  <span>Follow-up instructions</span>
+                  <textarea
+                    value={consultForm.followUpInstructions}
+                    onChange={(e) =>
+                      setConsultForm((p) => ({ ...p, followUpInstructions: e.target.value }))
+                    }
+                    rows={2}
+                    placeholder="Follow-up instructions"
+                    className="video-consult-form__input"
+                  />
+                </label>
+                <div className="video-consult-form__actions">
+                  <button
+                    type="button"
+                    className="video-consult-form__btn video-consult-form__btn--secondary"
+                    onClick={() => setShowConsultForm(false)}
+                  >
+                    Skip
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={consultSubmitting}
+                    className="video-consult-form__btn video-consult-form__btn--primary"
+                  >
+                    {consultSubmitting ? "Submitting..." : "Submit notes"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </>
       ) : (
         <>
           {roomName && (

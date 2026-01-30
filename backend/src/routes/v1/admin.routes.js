@@ -11,10 +11,13 @@ router.use(verifyJWT, authorizeRoles('admin')); // Admin only
 
 router.get('/pending-doctors', getPendingDoctors);// Get list of pending doctors
 router.put('/doctors/:doctorId/verify', verifyDoctor);// Verify or reject doctor
+router.patch('/doctors/:id/verify', updateDoctorVerification); // Update doctor verification status
+
+
 router.post('/appointments/cleanup', appointmentCleanup); // cleanup the old inconsistent appointments and store them in separate logsDB
+
 router.get('/appointments/status', getAppointmentStats); // Get appointment statistics
 router.get('/doctors/status', getDoctorStatus); // Get doctor verification status stats
-router.patch('/doctors/:id/verify', updateDoctorVerification); // Update doctor verification status
 router.get('/platform/overview', getPlatformOverview); // Get platform overview stats
 router.get('/platform/revenue', getRevenueReport); // Get revenue report
 router.get('/audit-logs', getAuditLogs); // Get audit logs

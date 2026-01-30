@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import LoadingSpinner from "../../components/feedback/LoadingSpinner";
+import './PendingDoctors.css';
 
 export default function PendingDoctors() {
   const [doctors, setDoctors] = useState([]);
@@ -35,13 +37,13 @@ export default function PendingDoctors() {
     }
   };
 
-  if (loading) return <div>Loading…</div>;
+  if (loading) { return <LoadingSpinner size="lg" text="Loading pending doctors..." fullScreen />; }
 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0 }}>Pending Doctors</h2>
-        <button onClick={load} style={{ marginLeft: "auto" }}>
+        <button className='refresh-button' onClick={load} style={{ marginLeft: "auto" }}>
           Refresh
         </button>
       </div>

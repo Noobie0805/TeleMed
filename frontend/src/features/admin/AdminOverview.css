@@ -1,0 +1,320 @@
+.refresh-button {
+    background-color: #52b788;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.refresh-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(82, 183, 136, 0.4);
+}
+
+.admin-overview-page {
+  max-width: 960px;
+  color: #e2e8f0;
+}
+
+.admin-overview__message {
+  color: #52b788;
+  margin: 0 0 12px 0;
+}
+
+.overview-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.overview-section {
+  border: 1px solid rgba(82, 183, 136, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.overview-section--wide {
+  grid-column: 1 / -1;
+}
+
+.overview-section--actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overview-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #f1f5f9;
+}
+
+.overview-section h4 {
+  margin: 12px 0 8px 0;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.overview-section h4:first-of-type {
+  margin-top: 0;
+}
+
+/* Stat cards */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.stats-cards--compact {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.stat-card {
+  padding: 14px 12px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card__value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.stat-card__label {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.stat-card--primary .stat-card__value { color: #60a5fa; }
+.stat-card--primary { border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.08); }
+
+.stat-card--success .stat-card__value { color: #52b788; }
+.stat-card--success { border-color: rgba(82, 183, 136, 0.3); background: rgba(82, 183, 136, 0.08); }
+
+.stat-card--warning .stat-card__value { color: #fbbf24; }
+.stat-card--warning { border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.08); }
+
+.stat-card--error .stat-card__value { color: #f87171; }
+.stat-card--error { border-color: rgba(248, 113, 113, 0.3); background: rgba(248, 113, 113, 0.08); }
+
+.stat-card--info .stat-card__value { color: #38bdf8; }
+.stat-card--info { border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08); }
+
+.stat-card--revenue .stat-card__value,
+.stat-card--commission .stat-card__value { color: #34d399; }
+.stat-card--revenue,
+.stat-card--commission { border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.08); }
+
+/* Platform section spans full width for stat grid */
+.overview-section--platform {
+  grid-column: 1 / -1;
+}
+
+.overview-section--platform .stats-cards {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* Pending doctors list */
+.overview-subsection {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.pending-doctors-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pending-doctor-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  font-size: 13px;
+}
+
+.pending-doctor__name {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.pending-doctor__email {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.pending-doctor__date {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.overview-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #52b788;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.overview-link:hover {
+  text-decoration: underline;
+  color: #6ee7b7;
+}
+
+/* Status breakdown */
+.status-breakdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  font-size: 13px;
+}
+
+.status-breakdown__name {
+  text-transform: capitalize;
+  color: #e2e8f0;
+  min-width: 100px;
+}
+
+.status-breakdown__count {
+  font-weight: 600;
+  color: #52b788;
+}
+
+.status-breakdown__duration {
+  margin-left: auto;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.overview-empty {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.revenue-list,
+.audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.revenue-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(82, 183, 136, 0.08);
+  font-size: 14px;
+}
+
+.revenue-row__day {
+  flex: 0 0 120px;
+  color: #cbd5e1;
+}
+
+.revenue-row__amount {
+  font-weight: 600;
+  color: #52b788;
+}
+
+.revenue-row__consults {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.audit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.audit-row__date {
+  flex: 0 0 160px;
+  color: #cbd5e1;
+}
+
+.audit-row__status {
+  color: #f87171;
+  font-weight: 500;
+}
+
+.admin-overview__cleanup-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 220px;
+}
+
+.admin-overview__cleanup-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.admin-overview__cleanup-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.overview-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}

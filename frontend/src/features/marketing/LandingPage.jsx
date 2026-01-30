@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiSmartphone, FiPhone, FiBarChart2, FiPackage, FiLock, FiCheck, FiStar, FiVideo, FiArrowRight } from 'react-icons/fi';
-import { MdMedicalServices } from 'react-icons/md';
+// import { MdMedicalServices } from 'react-icons/md';
 import MarketingNavbar from './MarketingNavbar';
 import './LandingPage.css';
 
@@ -40,50 +40,50 @@ const LandingPage = () => {
     { name: 'Psychiatry', count: '160+ Specialists' }
   ];
 
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Patient',
-      text: 'The AI symptom checker helped me understand my condition before seeing a doctor. Very accurate and informative!',
-      rating: 5
-    },
-    {
-      name: 'Dr. Michael Chen',
-      role: 'Healthcare Provider',
-      text: 'Excellent platform for patient management. The preliminary data saves consultation time and improves outcomes.',
-      rating: 5
-    },
-    {
-      name: 'Emma Davis',
-      role: 'Patient',
-      text: 'Convenient video consultations saved me a trip to the clinic. The entire process was smooth and professional.',
-      rating: 5
-    }
-  ];
+  // const testimonials = [
+  //   {
+  //     name: 'Sarah Johnson',
+  //     role: 'Patient',
+  //     text: 'The AI symptom checker helped me understand my condition before seeing a doctor. Very accurate and informative!',
+  //     rating: 5
+  //   },
+  //   {
+  //     name: 'Dr. Michael Chen',
+  //     role: 'Healthcare Provider',
+  //     text: 'Excellent platform for patient management. The preliminary data saves consultation time and improves outcomes.',
+  //     rating: 5
+  //   },
+  //   {
+  //     name: 'Emma Davis',
+  //     role: 'Patient',
+  //     text: 'Convenient video consultations saved me a trip to the clinic. The entire process was smooth and professional.',
+  //     rating: 5
+  //   }
+  // ];
 
-  const pricing = [
-    {
-      tier: 'Basic',
-      price: 'Free',
-      description: 'Perfect for getting started',
-      features: ['Unlimited symptom checks', 'Health tracking', 'Medical history storage']
-    },
-    {
-      tier: 'Pro',
-      price: '$29',
-      period: '/month',
-      description: 'For regular care needs',
-      features: ['Everything in Basic', '4 video consultations/month', 'Priority scheduling', 'Prescription management'],
-      highlighted: true
-    },
-    {
-      tier: 'Premium',
-      price: '$79',
-      period: '/month',
-      description: 'For comprehensive care',
-      features: ['Everything in Pro', 'Unlimited consultations', 'Specialist access', '24/7 support', 'Health reports']
-    }
-  ];
+  // const pricing = [
+  //   {
+  //     tier: 'Basic',
+  //     price: 'Free',
+  //     description: 'Perfect for getting started',
+  //     features: ['Unlimited symptom checks', 'Health tracking', 'Medical history storage']
+  //   },
+  //   {
+  //     tier: 'Pro',
+  //     price: '$29',
+  //     period: '/month',
+  //     description: 'For regular care needs',
+  //     features: ['Everything in Basic', '4 video consultations/month', 'Priority scheduling', 'Prescription management'],
+  //     highlighted: true
+  //   },
+  //   {
+  //     tier: 'Premium',
+  //     price: '$79',
+  //     period: '/month',
+  //     description: 'For comprehensive care',
+  //     features: ['Everything in Pro', 'Unlimited consultations', 'Specialist access', '24/7 support', 'Health reports']
+  //   }
+  // ];
 
   return (
     <div className="landing-page">
@@ -115,9 +115,9 @@ const LandingPage = () => {
         </div>
         <div className="hero-visual">
           <div className="hero-graphic">
-            <div className="floating-card card-1"><FiSmartphone size={20} aria-hidden /> Symptom Check</div>
-            <div className="floating-card card-2"><MdMedicalServices size={20} aria-hidden /> Video Call</div>
-            <div className="floating-card card-3"><FiBarChart2 size={20} aria-hidden /> Health Tracking</div>
+            <div className="floating-card card-1"><FiSmartphone size={18} aria-hidden /> Symptom Check</div>
+            <div className="floating-card card-2"><FiVideo size={18} aria-hidden /> Video Call</div>
+            <div className="floating-card card-3"><FiBarChart2 size={18} aria-hidden /> Health Tracking</div>
           </div>
         </div>
       </section>
